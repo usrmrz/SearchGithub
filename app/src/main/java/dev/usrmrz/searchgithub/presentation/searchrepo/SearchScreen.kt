@@ -1,62 +1,95 @@
 package dev.usrmrz.searchgithub.presentation.searchrepo
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.usrmrz.searchgithub.data.database.entity.RepoEntity
+import dev.usrmrz.searchgithub.R
+import dev.usrmrz.searchgithub.presentation.ui.theme.SearchGithubTheme
+
 
 @Composable
-fun SearchScreen(viewModel: RepoViewModel) {
-    val state by viewModel.state.collectAsState()
-
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        var query by remember { mutableStateOf("") }
-
-        TextField(
-            value = query,
-            onValueChange = { query = it },
-            label = { Text("Введите запрос") },
-            modifier = Modifier.fillMaxWidth()
+fun SearchScreen(
+    gitUiState: GitUiState,
+    modifier: Modifier = Modifier,
+) {
+    when (gitUiState) {
+        is GitUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
+        is GitUiState.Success -> ResultScreen(
+            gitUiState.repos, modifier = modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = { viewModel.onEvent(Event.Search(query)) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Find")
-        }
+        is GitUiState.Error -> ErrorScreen( modifier = modifier.fillMaxSize())
+    }
+}
 
-        Spacer(modifier = Modifier.height(16.dp))
+/**
+ * The home screen displaying the loading message.
+ */
+@Composable
+fun LoadingScreen(modifier: Modifier = Modifier) {
+    Image(
+        modifier = modifier.size(200.dp),
+        painter = painterResource(R.drawable.loading_img),
+        contentDescription = stringResource(R.string.loading)
+    )
+}
 
-        when (state) {
-            is State.Loading -> Text("Loading...")
-            is State.Success -> {
-                val repos = (state as State.Success<List<RepoEntity>>).data
-                LazyColumn {
-                    items(repos) { repo ->
-                        Text(repo.name, style = MaterialTheme.typography.titleMedium)
-                        Text(repo.description ?: "No Description", style = MaterialTheme.typography.body2)
-                        Text("⭐ ${repo.stars}", style = MaterialTheme.typography.caption)
-                        Divider()
-                    }
-                }
-            }
-            is State.Error -> Text("Ошибка: ${(state as State.Error).message}")
-        }
+@Composable
+fun ErrorScreen(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_connection_error), contentDescription = ""
+        )
+        Text(text = stringResource(R.string.loading_failed), modifier = Modifier.padding(16.dp))
+    }
+}
+
+@Composable
+fun ResultScreen(repos: String, modifier: Modifier = Modifier) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+    ) {
+        Text(text = repos)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoadingScreenPreview() {
+    SearchGithubTheme {
+        LoadingScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ErrorScreenPreview() {
+    SearchGithubTheme {
+        ErrorScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PhotosGridScreenPreview() {
+    SearchGithubTheme {
+        ResultScreen(stringResource(R.string.placeholder_success))
     }
 }

@@ -5,7 +5,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.usrmrz.searchgithub.data.api.GithubApi
-import dev.usrmrz.searchgithub.data.database.RepoDao
 import dev.usrmrz.searchgithub.data.repository.RepoRepositoryImpl
 import dev.usrmrz.searchgithub.domain.repository.RepoRepository
 import javax.inject.Singleton
@@ -16,7 +15,7 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideRepoRepository(githubApi: GithubApi, repoDao: RepoDao): RepoRepository {
-        return RepoRepositoryImpl(githubApi, repoDao)
+    fun provideRepoRepository(githubApi: GithubApi): RepoRepository {
+        return RepoRepositoryImpl(githubApi)
     }
 }
