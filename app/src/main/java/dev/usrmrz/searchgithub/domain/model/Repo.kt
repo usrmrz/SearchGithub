@@ -7,6 +7,6 @@ data class Repo(
     val id: Int,
     val name: String,
     val description: String?,
-    @SerializedName("stargazers_count")
+    @field:SerializedName("stargazers_count")
     val stars: Int,
 )

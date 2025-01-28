@@ -1,8 +1,7 @@
 package dev.usrmrz.searchgithub.domain.repository
 
-import dev.usrmrz.searchgithub.domain.model.Repo
+import dev.usrmrz.searchgithub.domain.model.RepoSearchResponse
 
 interface RepoRepository {
-    suspend fun searchRepos(query: String): List<Repo>
-    suspend fun count(query: String): Int
+    suspend fun searchRepos(query: String): RepoSearchResponse
 }
