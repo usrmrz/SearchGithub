@@ -29,9 +29,7 @@ class RepoViewModel @Inject constructor(
             gitUiState = GitUiState.Loading
             gitUiState = try {
                 val listResult = repo.searchRepos(query = "kotlin")
-                GitUiState.Success(
-                    "Success: ${listResult.size} Mars photos retrieved"
-                )
+                GitUiState.Success(listResult)
             } catch (e: IOException) {
                 GitUiState.Error
             } catch (e: HttpException) {

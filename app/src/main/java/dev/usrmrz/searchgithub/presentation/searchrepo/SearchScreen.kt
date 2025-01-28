@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,26 +20,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.usrmrz.searchgithub.R
+import dev.usrmrz.searchgithub.domain.model.Repo
 import dev.usrmrz.searchgithub.presentation.ui.theme.SearchGithubTheme
-
 
 @Composable
 fun SearchScreen(
     gitUiState: GitUiState,
     modifier: Modifier = Modifier,
 ) {
-    when (gitUiState) {
+    when(gitUiState) {
         is GitUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
         is GitUiState.Success -> ResultScreen(
             gitUiState.repos, modifier = modifier.fillMaxWidth()
         )
-        is GitUiState.Error -> ErrorScreen( modifier = modifier.fillMaxSize())
+        is GitUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
     }
 }
 
-/**
- * The home screen displaying the loading message.
- */
 @Composable
 fun LoadingScreen(modifier: Modifier = Modifier) {
     Image(
@@ -61,12 +61,25 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ResultScreen(repos: String, modifier: Modifier = Modifier) {
+fun ResultScreen(repos: List<Repo>, modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        Text(text = repos)
+        LazyColumn {
+            items(repos) { repo ->
+                RepoItem(repo)
+            }
+        }
+    }
+}
+
+@Composable
+fun RepoItem(repo: Repo) {
+    Column(modifier = Modifier.padding(8.dp)) {
+        Text("Name: ${repo.name}", style = MaterialTheme.typography.titleMedium)
+        Text("Description: ${repo.description ?: "No description"}")
+        Text("Stars: ${repo.stars}")
     }
 }
 
@@ -88,8 +101,14 @@ fun ErrorScreenPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun PhotosGridScreenPreview() {
+fun ResultScreenPreview() {
     SearchGithubTheme {
-        ResultScreen(stringResource(R.string.placeholder_success))
+        ResultScreen(repos = listOf(
+            Repo(101, "Repo1", "Description1", 100),
+            Repo(102, "Repo2", "Description2", 150),
+            Repo(103, "Repo3", "Description3", 200),
+            Repo(104, "Repo4", "Description4", 300),
+            Repo(105, "Repo5", "Description5", 500),
+        ))
     }
 }
