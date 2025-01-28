@@ -21,10 +21,10 @@ class RepoViewModel @Inject constructor(
         private set
 
     init {
-        searchRepos()
+        searchRepositories()
     }
 
-    fun searchRepos() {
+    fun searchRepositories() {
         viewModelScope.launch {
             gitUiState = GitUiState.Loading
             gitUiState = try {
