@@ -6,12 +6,13 @@ import dev.usrmrz.searchgithub.data.entities.RepoEntity
 
 @Database(
     entities = [RepoEntity::class],
-    version = 1
+    version = 1,
+    exportSchema = false,
 )
 abstract class GitDatabase : RoomDatabase() {
     abstract val repoDao: RepoDao
 
     companion object {
-        const val DATABASE_NAME = "git_db"
+        const val DATABASE_NAME = "github_db"
     }
 }

@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface RepoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertRepos(repos: List<RepoEntity>)
+    suspend fun insertReposDb(repos: List<RepoEntity>)
 
     @Query("SELECT * FROM repositories")
-    fun getRepos(): Flow<List<RepoEntity>>
+    fun getReposFromDb(): Flow<List<RepoEntity>>
 }
 
