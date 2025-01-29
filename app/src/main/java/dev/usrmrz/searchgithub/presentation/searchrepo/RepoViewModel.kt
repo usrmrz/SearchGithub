@@ -28,8 +28,10 @@ class RepoViewModel @Inject constructor(
         viewModelScope.launch {
             gitUiState = GitUiState.Loading
             gitUiState = try {
-                val listResult = repo.searchRepos(query = "kotlin")
+                val listResult = repo.searchReposApi(query = "best")
+                repo.insertReposDb(listResult.items)
                 GitUiState.Success(listResult)
+
             } catch (e: IOException) {
                 GitUiState.Error
             } catch (e: HttpException) {

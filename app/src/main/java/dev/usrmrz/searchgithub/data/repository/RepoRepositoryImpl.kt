@@ -32,19 +32,19 @@ class RepoRepositoryImpl(
         )
     }
 
-    override suspend fun searchRepos(query: String): RepoSearchResponse {
-        val response = githubApi.searchRepos(query)
+    override suspend fun searchReposApi(query: String): RepoSearchResponse {
+        val response = githubApi.searchReposApi(query)
         return response
     }
 
-    override fun getRepos(): Flow<List<Repo>> {
-        return repoDao.getRepos().map { entities ->
+    override fun getReposFromDb(): Flow<List<Repo>> {
+        return repoDao.getReposFromDb().map { entities ->
             entities.map { it.toDomainModel() }
         }
     }
 
-    override suspend fun insertRepos(repos: List<Repo>) {
+    override suspend fun insertReposDb(repos: List<Repo>) {
         val entities = repos.map { it.toEntity() }
-        repoDao.insertRepos(entities)
+        repoDao.insertReposDb(entities)
     }
 }

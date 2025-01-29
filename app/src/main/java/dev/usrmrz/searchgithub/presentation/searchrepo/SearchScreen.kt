@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +38,7 @@ fun SearchScreen(
         is GitUiState.Success -> ResultScreen(
             gitUiState.data, modifier = modifier.fillMaxWidth()
         )
+
         is GitUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
     }
 }
@@ -69,7 +72,7 @@ fun ResultScreen(data: RepoSearchResponse, modifier: Modifier = Modifier) {
         Row(
             modifier = Modifier.padding(8.dp)
         ) {
-            Text("There is ${data.total} repositories")
+            Text("There is ${data.total} repositories with query \"query\"")
         }
         Spacer(modifier = Modifier.height(8.dp))
         Row(
@@ -87,12 +90,33 @@ fun ResultScreen(data: RepoSearchResponse, modifier: Modifier = Modifier) {
 
 @Composable
 fun RepoItem(repo: Repo) {
-    Column(modifier = Modifier.padding(8.dp)) {
-        Text("ID: ${repo.id}", style = MaterialTheme.typography.bodyMedium)
-        Text("Name: ${repo.name}", style = MaterialTheme.typography.titleMedium)
-        Text("Description: ${repo.description ?: "No description"}")
-        Text("Stars: ${repo.stars}")
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = repo.name, style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = repo.description ?: "No description",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+            Text(
+                text = "⭐ ${repo.stars}",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
     }
+
+//    Column(modifier = Modifier.padding(8.dp)) {
+//        Text("ID: ${repo.id}", style = MaterialTheme.typography.bodyMedium)
+//        Text("Name: ${repo.name}", style = MaterialTheme.typography.titleMedium)
+//        Text("Description: ${repo.description ?: "No description"}")
+//        Text("Stars: ${repo.stars}")
+//    }
 }
 
 @Preview(showBackground = true)
