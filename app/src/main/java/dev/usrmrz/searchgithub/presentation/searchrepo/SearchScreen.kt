@@ -36,7 +36,6 @@ fun SearchScreen(
         is GitUiState.Success -> ResultScreen(
             gitUiState.data, modifier = modifier.fillMaxWidth()
         )
-
         is GitUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
     }
 }
@@ -75,7 +74,7 @@ fun ResultScreen(data: RepoSearchResponse, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(8.dp))
         Row(
             modifier = modifier,
-            horizontalArrangement = Arrangement.Center
+//            horizontalArrangement = Arrangement.Center
         ) {
             LazyColumn {
                 items(data.items) { repo ->
@@ -86,44 +85,49 @@ fun ResultScreen(data: RepoSearchResponse, modifier: Modifier = Modifier) {
     }
 }
 
-
-    @Composable
-    fun RepoItem(repo: Repo) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Text("Name: ${repo.name}", style = MaterialTheme.typography.titleMedium)
-            Text("Description: ${repo.description ?: "No description"}")
-            Text("Stars: ${repo.stars}")
-        }
+@Composable
+fun RepoItem(repo: Repo) {
+    Column(modifier = Modifier.padding(8.dp)) {
+        Text("ID: ${repo.id}", style = MaterialTheme.typography.bodyMedium)
+        Text("Name: ${repo.name}", style = MaterialTheme.typography.titleMedium)
+        Text("Description: ${repo.description ?: "No description"}")
+        Text("Stars: ${repo.stars}")
     }
+}
 
-    @Preview(showBackground = true)
-    @Composable
-    fun LoadingScreenPreview() {
-        SearchGithubTheme {
-            LoadingScreen()
-        }
+@Preview(showBackground = true)
+@Composable
+fun LoadingScreenPreview() {
+    SearchGithubTheme {
+        LoadingScreen()
     }
+}
 
-    @Preview(showBackground = true)
-    @Composable
-    fun ErrorScreenPreview() {
-        SearchGithubTheme {
-            ErrorScreen()
-        }
+@Preview(showBackground = true)
+@Composable
+fun ErrorScreenPreview() {
+    SearchGithubTheme {
+        ErrorScreen()
     }
+}
 
-    @Preview(showBackground = true)
-    @Composable
-    fun ResultScreenPreview() {
-        SearchGithubTheme {
-            ResultScreen(
-                repos = listOf(
-                    Repo(101, "Repo1", "Description1", 100),
-                    Repo(102, "Repo2", "Description2", 150),
-                    Repo(103, "Repo3", "Description3", 200),
-                    Repo(104, "Repo4", "Description4", 300),
-                    Repo(105, "Repo5", "Description5", 500),
-                )
+@Preview(showBackground = true)
+@Composable
+fun ResultScreenPreview() {
+    SearchGithubTheme {
+        val sampleData = RepoSearchResponse(
+            total = 123456,
+            items = listOf(
+                Repo(101, "Repo1", "Description1", 100),
+                Repo(102, "Repo2", "Description2", 150),
+                Repo(103, "Repo3", "Description3", 200),
+                Repo(104, "Repo4", "Description4", 300),
+                Repo(105, "Repo5", "Description5", 500),
             )
-        }
+        )
+        ResultScreen(
+            data = sampleData,
+            modifier = Modifier.fillMaxSize()
+        )
     }
+}
