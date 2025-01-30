@@ -9,7 +9,7 @@ import dev.usrmrz.searchgithub.data.entities.RepoEntity
     version = 1,
     exportSchema = false,
 )
-abstract class GitDatabase : RoomDatabase() {
+abstract class GithubDatabase : RoomDatabase() {
     abstract val repoDao: RepoDao
 
     companion object {
