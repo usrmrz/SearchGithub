@@ -1,4 +1,4 @@
-package dev.usrmrz.searchgithub.presentation.searchrepo
+package dev.usrmrz.searchgithub.presentation.search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -21,12 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.usrmrz.searchgithub.R
 import dev.usrmrz.searchgithub.domain.model.Repo
 import dev.usrmrz.searchgithub.domain.model.RepoSearchResponse
-import dev.usrmrz.searchgithub.presentation.ui.theme.SearchGithubTheme
 
 @Composable
 fun SearchScreen(
@@ -77,7 +75,6 @@ fun ResultScreen(data: RepoSearchResponse, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(8.dp))
         Row(
             modifier = modifier,
-//            horizontalArrangement = Arrangement.Center
         ) {
             LazyColumn {
                 items(data.items) { repo ->
@@ -119,39 +116,39 @@ fun RepoItem(repo: Repo) {
 //    }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoadingScreenPreview() {
-    SearchGithubTheme {
-        LoadingScreen()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ErrorScreenPreview() {
-    SearchGithubTheme {
-        ErrorScreen()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ResultScreenPreview() {
-    SearchGithubTheme {
-        val sampleData = RepoSearchResponse(
-            total = 123456,
-            items = listOf(
-                Repo(101, "Repo1", "Description1", 100),
-                Repo(102, "Repo2", "Description2", 150),
-                Repo(103, "Repo3", "Description3", 200),
-                Repo(104, "Repo4", "Description4", 300),
-                Repo(105, "Repo5", "Description5", 500),
-            )
-        )
-        ResultScreen(
-            data = sampleData,
-            modifier = Modifier.fillMaxSize()
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun LoadingScreenPreview() {
+//    SearchGithubTheme {
+//        LoadingScreen()
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun ErrorScreenPreview() {
+//    SearchGithubTheme {
+//        ErrorScreen()
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun ResultScreenPreview() {
+//    SearchGithubTheme {
+//        val sampleData = RepoSearchResponse(
+//            total = 123456,
+//            items = listOf(
+//                Repo(101, "Repo1", "Description1", 100),
+//                Repo(102, "Repo2", "Description2", 150),
+//                Repo(103, "Repo3", "Description3", 200),
+//                Repo(104, "Repo4", "Description4", 300),
+//                Repo(105, "Repo5", "Description5", 500),
+//            )
+//        )
+//        ResultScreen(
+//            data = sampleData,
+//            modifier = Modifier.fillMaxSize()
+//        )
+//    }
+//}

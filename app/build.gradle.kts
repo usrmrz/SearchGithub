@@ -28,11 +28,16 @@ android {
     }
 
     buildTypes {
-        release {
+        named("release") {
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-            )
+            buildConfigField("Boolean", "ENABLE_LOGS", "false")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+        named("debug") {
+            isMinifyEnabled = false
+            buildConfigField("Boolean", "ENABLE_LOGS", "true")
+            applicationIdSuffix = ".debug"
+            isDebuggable = true
         }
     }
     compileOptions {
@@ -43,6 +48,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     packaging {

@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.AndroidEntryPoint
-import dev.usrmrz.searchgithub.presentation.searchrepo.RepoViewModel
-import dev.usrmrz.searchgithub.presentation.searchrepo.SearchScreen
+import dev.usrmrz.searchgithub.presentation.search.RepoViewModel
+import dev.usrmrz.searchgithub.presentation.search.SearchScreen
 import dev.usrmrz.searchgithub.presentation.ui.theme.SearchGithubTheme
 
 @AndroidEntryPoint

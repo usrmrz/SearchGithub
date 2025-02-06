@@ -1,4 +1,4 @@
-package dev.usrmrz.searchgithub.data.database
+package dev.usrmrz.searchgithub.data.db
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -12,7 +12,7 @@ interface RepoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertReposDb(repos: List<RepoEntity>)
 
-    @Query("SELECT * FROM repositories")
+    @Query("SELECT * FROM repo")
     fun getReposFromDb(): Flow<List<RepoEntity>>
 }
 

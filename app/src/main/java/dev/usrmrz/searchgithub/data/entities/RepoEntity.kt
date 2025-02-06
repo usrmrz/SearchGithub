@@ -1,12 +1,31 @@
 package dev.usrmrz.searchgithub.data.entities
 
+import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.Index
 
-@Entity(tableName = "repositories")
+@Entity(
+    tableName = "repo",
+    indices = [
+        Index("id"),
+        Index("owner_login")
+    ],
+    primaryKeys = ["name", "owner_login"],
+)
+
 data class RepoEntity(
-    @PrimaryKey val id: Int,
+
+    val id: Int,
     val name: String,
-    val description: String,
+    val fullName: String,
+    val description: String?,
+    @field:Embedded(prefix = "owner_")
+    val owner: OwnerEntity,
     val stars: Int,
 )
+
+data class OwnerEntity(
+    val login: String,
+    val url: String?
+)
+

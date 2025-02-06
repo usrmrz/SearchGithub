@@ -1,4 +1,4 @@
-package dev.usrmrz.searchgithub.presentation.searchrepo
+package dev.usrmrz.searchgithub.presentation.search
 
 import dev.usrmrz.searchgithub.domain.model.RepoSearchResponse
 

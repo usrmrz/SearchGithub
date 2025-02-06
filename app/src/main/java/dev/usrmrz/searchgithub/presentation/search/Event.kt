@@ -1,8 +1,9 @@
-package dev.usrmrz.searchgithub.presentation.searchrepo
+package dev.usrmrz.searchgithub.presentation.search
 
 sealed class Event {
     data class Search(val query: String) : Event()
 }
+
 
 
 
