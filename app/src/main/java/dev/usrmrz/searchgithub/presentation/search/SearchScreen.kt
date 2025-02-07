@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.usrmrz.searchgithub.R
-import dev.usrmrz.searchgithub.domain.model.Repo
+import dev.usrmrz.searchgithub.domain.model.RepoModel
 import dev.usrmrz.searchgithub.domain.model.RepoSearchResponse
 
 @Composable
@@ -76,17 +75,30 @@ fun ResultScreen(data: RepoSearchResponse, modifier: Modifier = Modifier) {
         Row(
             modifier = modifier,
         ) {
+            val sampleData = RepoSearchResponse(
+                query = "kotlin",
+                total = 123456,
+                repoIds = listOf(1,2,3,4,5),
+                next = 2
+            )
+//            val sample = listOf(
+//                RepoModel(1, "Repo1", "Name1/Repo1", , "Name1", ),
+//                RepoModel(2, "Repo2", "Name2/Repo2", "Description1", "Name1"),
+//                Repo(3, "Repo3", "Name3/Repo3", "Description1", "Name1),
+//                Repo(4, "Repo4", "Name4/Repo4", "Description1",),
+//                RepoModel(5, "Repo5", "Name5/Repo5", "Description1",),
+//            )
             LazyColumn {
-                items(data.items) { repo ->
-                    RepoItem(repo)
-                }
+//                items(data.repoIds) { repo ->
+//                    RepoItem(sample.repoIds)
+//                }
             }
         }
     }
 }
 
 @Composable
-fun RepoItem(repo: Repo) {
+fun RepoItem(repoModel: RepoModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -94,14 +106,14 @@ fun RepoItem(repo: Repo) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = repo.name, style = MaterialTheme.typography.titleMedium)
+            Text(text = repoModel.name, style = MaterialTheme.typography.titleMedium)
             Text(
-                text = repo.description ?: "No description",
+                text = repoModel.description ?: "No description",
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(top = 4.dp)
             )
             Text(
-                text = "⭐ ${repo.stars}",
+                text = "⭐ ${repoModel.stars}",
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(top = 8.dp)
             )
@@ -109,10 +121,10 @@ fun RepoItem(repo: Repo) {
     }
 
 //    Column(modifier = Modifier.padding(8.dp)) {
-//        Text("ID: ${repo.id}", style = MaterialTheme.typography.bodyMedium)
-//        Text("Name: ${repo.name}", style = MaterialTheme.typography.titleMedium)
-//        Text("Description: ${repo.description ?: "No description"}")
-//        Text("Stars: ${repo.stars}")
+//        Text("ID: ${repoModel.id}", style = MaterialTheme.typography.bodyMedium)
+//        Text("Name: ${repoModel.name}", style = MaterialTheme.typography.titleMedium)
+//        Text("Description: ${repoModel.description ?: "No description"}")
+//        Text("Stars: ${repoModel.stars}")
 //    }
 }
 
@@ -139,11 +151,11 @@ fun RepoItem(repo: Repo) {
 //        val sampleData = RepoSearchResponse(
 //            total = 123456,
 //            items = listOf(
-//                Repo(101, "Repo1", "Description1", 100),
-//                Repo(102, "Repo2", "Description2", 150),
-//                Repo(103, "Repo3", "Description3", 200),
-//                Repo(104, "Repo4", "Description4", 300),
-//                Repo(105, "Repo5", "Description5", 500),
+//                RepoModel(101, "Repo1", "Description1", 100),
+//                RepoModel(102, "Repo2", "Description2", 150),
+//                RepoModel(103, "Repo3", "Description3", 200),
+//                RepoModel(104, "Repo4", "Description4", 300),
+//                RepoModel(105, "Repo5", "Description5", 500),
 //            )
 //        )
 //        ResultScreen(

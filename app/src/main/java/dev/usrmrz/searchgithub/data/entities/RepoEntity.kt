@@ -18,9 +18,10 @@ data class RepoEntity(
     val id: Int,
     val name: String,
     val fullName: String,
-    val description: String?,
     @field:Embedded(prefix = "owner_")
     val owner: OwnerEntity,
+    val description: String?,
+    val updatedAt: String,
     val stars: Int,
 )
 

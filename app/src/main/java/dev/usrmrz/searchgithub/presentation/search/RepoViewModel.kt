@@ -7,11 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.usrmrz.searchgithub.domain.repository.RepoRepository
-import java.io.IOException
-import javax.inject.Inject
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
+import javax.inject.Inject
 
+@Suppress("unused")
 @HiltViewModel
 class RepoViewModel @Inject constructor(
     private val repo: RepoRepository
@@ -27,16 +26,16 @@ class RepoViewModel @Inject constructor(
     fun searchRepos() {
         viewModelScope.launch {
             gitUiState = GitUiState.Loading
-            gitUiState = try {
-                val listResult = repo.searchReposApi(query = "github browser")
-                repo.insertReposDb(listResult)
-                GitUiState.Success(listResult)
-
-            } catch (e: IOException) {
-                GitUiState.Error
-            } catch (e: HttpException) {
-                GitUiState.Error
-            }
+//            gitUiState = try {
+//                val listResult = repo.searchReposApi(query = "github browser")
+//                repo.insertReposDb(listResult)
+//                GitUiState.Success(listResult)
+//
+//            } catch (e: IOException) {
+//                GitUiState.Error
+//            } catch (e: HttpException) {
+//                GitUiState.Error
+//            }
         }
     }
 }

@@ -2,7 +2,7 @@ package dev.usrmrz.searchgithub.domain.model
 
 import com.google.gson.annotations.SerializedName
 
-data class User(
+data class UserModel(
 
     val login: String,
     @field:SerializedName("avatar_url")
