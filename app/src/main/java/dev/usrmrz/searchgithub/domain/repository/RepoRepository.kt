@@ -1,11 +1,7 @@
 package dev.usrmrz.searchgithub.domain.repository
 
-<<<<<<< HEAD
-import dev.usrmrz.searchgithub.domain.model.Repo
-=======
 import dev.usrmrz.searchgithub.domain.model.Contributor
 import dev.usrmrz.searchgithub.domain.model.RepoModel
->>>>>>> two-tables
 import dev.usrmrz.searchgithub.domain.model.Resource
 import kotlinx.coroutines.flow.Flow
 
