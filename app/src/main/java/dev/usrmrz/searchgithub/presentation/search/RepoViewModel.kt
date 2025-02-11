@@ -10,32 +10,11 @@ import dev.usrmrz.searchgithub.domain.repository.RepoRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Suppress("unused")
+//@Suppress("unused")
 @HiltViewModel
 class RepoViewModel @Inject constructor(
-    private val repo: RepoRepository
+//    private val repo: RepoRepository
 ): ViewModel() {
 
-    var gitUiState: GitUiState by mutableStateOf(GitUiState.Loading)
-        private set
-
-    init {
-        searchRepos()
-    }
-
-    fun searchRepos() {
-        viewModelScope.launch {
-            gitUiState = GitUiState.Loading
-//            gitUiState = try {
-//                val listResult = repo.searchReposApi(query = "github browser")
-//                repo.insertReposDb(listResult)
-//                GitUiState.Success(listResult)
-//
-//            } catch (e: IOException) {
-//                GitUiState.Error
-//            } catch (e: HttpException) {
-//                GitUiState.Error
-//            }
-        }
-    }
+//    fun searchRepos() {  }
 }

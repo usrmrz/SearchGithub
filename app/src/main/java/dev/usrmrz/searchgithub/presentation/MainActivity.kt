@@ -8,11 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dev.usrmrz.searchgithub.presentation.search.RepoViewModel
-import dev.usrmrz.searchgithub.presentation.search.SearchScreen
-import dev.usrmrz.searchgithub.presentation.ui.theme.SearchGithubTheme
+import dev.usrmrz.searchgithub.presentation.navigation.GithubNavigation
+import dev.usrmrz.searchgithub.ui.theme.SearchGithubTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -25,10 +24,8 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .padding(top = 16.dp),
                 ) {
-                    val repoViewModel: RepoViewModel = viewModel()
-                    SearchScreen(
-                        gitUiState = repoViewModel.gitUiState
-                    )
+                    val navController = rememberNavController()
+                    GithubNavigation(navController = navController)
                 }
             }
         }

@@ -1,4 +1,4 @@
-package dev.usrmrz.searchgithub.presentation.ui.theme
+package dev.usrmrz.searchgithub.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

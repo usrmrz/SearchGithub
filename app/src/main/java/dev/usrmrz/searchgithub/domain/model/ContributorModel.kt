@@ -2,7 +2,7 @@ package dev.usrmrz.searchgithub.domain.model
 
 import com.google.gson.annotations.SerializedName
 
-data class Contributor(
+data class ContributorModel(
 
     @field:SerializedName("login")
     val login: String,

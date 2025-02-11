@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import dev.usrmrz.searchgithub.data.entities.ContributorEntity
 import dev.usrmrz.searchgithub.data.entities.RepoEntity
-import dev.usrmrz.searchgithub.data.entities.RepoSearchResultEntity
+import dev.usrmrz.searchgithub.data.entities.SearchResultEntity
 import dev.usrmrz.searchgithub.data.entities.UserEntity
 
 @Database(
@@ -12,7 +12,7 @@ import dev.usrmrz.searchgithub.data.entities.UserEntity
         UserEntity::class,
         RepoEntity::class,
         ContributorEntity::class,
-        RepoSearchResultEntity::class],
+        SearchResultEntity::class],
     version = 2,
     exportSchema = false,
 )

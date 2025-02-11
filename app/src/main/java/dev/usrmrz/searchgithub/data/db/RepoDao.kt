@@ -7,13 +7,12 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import dev.usrmrz.searchgithub.data.entities.ContributorEntity
 import dev.usrmrz.searchgithub.data.entities.RepoEntity
-import dev.usrmrz.searchgithub.data.entities.RepoSearchResultEntity
-import dev.usrmrz.searchgithub.domain.model.RepoModel
+import dev.usrmrz.searchgithub.data.entities.SearchResultEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 
 @Dao
-@Suppress("unused")
+//@Suppress("unused")
 abstract class RepoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -29,7 +28,7 @@ abstract class RepoDao {
     abstract suspend fun createRepoIfNotExists(repo: RepoEntity): Long
 
     @Query("SELECT * FROM repo WHERE owner_login = :ownerLogin AND name = :name")
-    abstract fun load(ownerLogin: String, name: String): Flow<RepoModel?>
+    abstract fun load(ownerLogin: String, name: String): Flow<RepoEntity?>
 
     @Query(
         """
@@ -50,10 +49,10 @@ abstract class RepoDao {
     abstract fun loadRepositories(owner: String): Flow<List<RepoEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insert(result: RepoSearchResultEntity)
+    abstract suspend fun insert(result: SearchResultEntity)
 
     @Query("SELECT * FROM RepoSearchResult WHERE `query` = :query")
-    abstract fun search(query: String): Flow<RepoSearchResultEntity?>
+    abstract fun search(query: String): Flow<SearchResultEntity?>
 
     @Query("SELECT * FROM repo WHERE id in (:repoIds)")
     protected abstract fun loadById(repoIds: List<Int>): Flow<List<RepoEntity>>
@@ -68,7 +67,7 @@ abstract class RepoDao {
     }
 
     @Query("SELECT * FROM RepoSearchResult WHERE `query` = :query")
-    abstract suspend fun findSearchResult(query: String): RepoSearchResultEntity?
+    abstract suspend fun findSearchResult(query: String): SearchResultEntity?
 }
 
 

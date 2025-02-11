@@ -7,9 +7,9 @@ import dev.usrmrz.searchgithub.domain.model.OwnerModel
 import dev.usrmrz.searchgithub.domain.model.RepoModel
 import javax.inject.Inject
 
-@Suppress("unused")
+//@Suppress("unused")
 class RepoMapper @Inject constructor(private val gson: Gson) {
-    fun mapToDomain(entity: RepoEntity): RepoModel {
+    fun mapToModel(entity: RepoEntity): RepoModel {
         val formattedDate = gson.toJson(entity.updatedAt)
         return RepoModel(
             id = entity.id,

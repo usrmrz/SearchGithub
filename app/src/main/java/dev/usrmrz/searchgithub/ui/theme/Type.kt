@@ -1,4 +1,4 @@
-package dev.usrmrz.searchgithub.presentation.ui.theme
+package dev.usrmrz.searchgithub.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,8 +1,12 @@
 <resources>
-    <string name="app_name">SearchGithub</string>
-	<string name="loading_failed">Failed to load</string>
+    <string name="app_name">Github</string>
     <string name="retry">Retry</string>
-    <string name="loading">Loading</string>
-    <string name="placeholder_success">Placeholder text</string>
-    <string name="mars_photo">Git repositories</string>
+    <string name="unknown_error">Unknown Error</string>
+    <string name="a11y_user_photo">user photo</string>
+    <string name="a11y_user_name">user name</string>
+    <string name="search_hint">search repositories</string>
+    <string name="error_message">Unknown Error</string>
+    <string name="repo_full_name"><b>%s</b>/%s</string>
+    <string name="empty_search_result">No results for <b>%s</b></string>
+    <string name="a11y_contributor_avatar">contributor avatar</string>
 </resources>

@@ -8,8 +8,8 @@ import kotlin.collections.mutableMapOf
 /**
  * Utility class that decides whether we should fetch some data or not.
  */
-@Suppress("unused")
-class RateLimiter(private val timeout: Long) {
+//@Suppress("unused")
+class RateLimiter(val timeout: Long) {
     private val lastFetchTimes = mutableMapOf<String, MutableStateFlow<Long>>()
 
     @Synchronized

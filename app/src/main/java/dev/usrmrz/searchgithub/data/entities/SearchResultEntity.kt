@@ -10,7 +10,7 @@ import dev.usrmrz.searchgithub.data.db.GithubTypeConverters
 )
 
 @TypeConverters(GithubTypeConverters::class)
-data class RepoSearchResultEntity(
+data class SearchResultEntity(
 
     val query: String,
     val repoIds: List<Int>,
