@@ -29,14 +29,14 @@ fun GithubNavigation(navController: NavHostController) {
         ) { backStackEntry ->
             val owner = backStackEntry.arguments?.getString("owner") ?: return@composable
             val name = backStackEntry.arguments?.getString("name") ?: return@composable
-            RepoScreen(
-                owner = owner,
-                name = name,
-                onUserClick = { login, avatarUrl ->
-                    val avatarPart = avatarUrl?.let { "/$it" } ?: ""
-                    navController.navigate("user/$login$avatarPart")
-                }
-            )
+//            RepoScreen(
+//                owner = owner,
+//                name = name,
+//                onUserClick = { login, avatarUrl ->
+//                    val avatarPart = avatarUrl?.let { "/$it" } ?: ""
+//                    navController.navigate("user/$login$avatarPart")
+//                }
+//            )
         }
 
         composable(
@@ -52,13 +52,13 @@ fun GithubNavigation(navController: NavHostController) {
         ) { backStackEntry ->
             val login = backStackEntry.arguments?.getString("login") ?: return@composable
             val avatarUrl = backStackEntry.arguments?.getString("avatarUrl")
-            UserScreen(
-                login = login,
-                avatarUrl = avatarUrl,
-                onRepoClick = { owner, name ->
-                    navController.navigate("repo/$owner/$name")
-                }
-            )
+//            UserScreen(
+//                login = login,
+//                avatarUrl = avatarUrl,
+//                onRepoClick = { owner, name ->
+//                    navController.navigate("repo/$owner/$name")
+//                }
+//            )
         }
     }
 }

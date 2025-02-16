@@ -6,11 +6,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import dev.usrmrz.searchgithub.data.api.GithubService
 import dev.usrmrz.searchgithub.data.db.GithubDb
 import dev.usrmrz.searchgithub.data.db.RepoDao
-import dev.usrmrz.searchgithub.data.repository.RepoRepositoryImpl
-import dev.usrmrz.searchgithub.domain.repository.RepoRepository
 import javax.inject.Singleton
 
 @Module
@@ -30,16 +27,6 @@ object AppModule {
     @Singleton
     @Provides
     fun provideRepoDao(db: GithubDb): RepoDao {
-        return db.repoDao
-    }
-
-    @Provides
-    @Singleton
-    fun provideRepoRepository(
-        db: GithubDb,
-        repoDao: RepoDao,
-        githubService: GithubService,
-    ): RepoRepository {
-        return RepoRepositoryImpl(db, repoDao, githubService)
+        return db.repoDao()
     }
 }

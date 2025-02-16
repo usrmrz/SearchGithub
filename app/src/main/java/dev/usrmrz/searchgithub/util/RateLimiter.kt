@@ -2,31 +2,36 @@ package dev.usrmrz.searchgithub.util
 
 
 import android.os.SystemClock
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlin.collections.mutableMapOf
+import androidx.collection.ArrayMap
+import java.util.concurrent.TimeUnit
 
 /**
  * Utility class that decides whether we should fetch some data or not.
  */
 //@Suppress("unused")
-class RateLimiter(val timeout: Long) {
-    private val lastFetchTimes = mutableMapOf<String, MutableStateFlow<Long>>()
+class RateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
+    private val timestamps = ArrayMap<KEY, Long>()
+    private val timeout = timeUnit.toMillis(timeout.toLong())
 
     @Synchronized
-    fun shouldFetch(key: String): Boolean {
-        val currentTime = now()
-        val lastTimeFlow = lastFetchTimes.getOrPut(key) { MutableStateFlow(0L) }
-        return (currentTime - lastTimeFlow.value) > timeout
+    fun shouldFetch(key: KEY): Boolean {
+        val lastFetched = timestamps[key]
+        val now = now()
+        if (lastFetched == null) {
+            timestamps[key] = now
+            return true
+        }
+        if (now - lastFetched > timeout) {
+            timestamps[key] = now
+            return true
+        }
+        return false
     }
 
-    fun updateFetchTime(key: String) {
-        lastFetchTimes[key]?.value = now()
-    }
-
-    private fun now() = SystemClock.elapsedRealtime()
+    private fun now() = SystemClock.uptimeMillis()
 
     @Synchronized
-    fun reset(key: String) {
-        lastFetchTimes[key]?.value = 0L
+    fun reset(key: KEY) {
+        timestamps.remove(key)
     }
 }

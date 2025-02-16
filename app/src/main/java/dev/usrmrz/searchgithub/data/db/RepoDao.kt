@@ -5,30 +5,30 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import dev.usrmrz.searchgithub.data.entities.ContributorEntity
-import dev.usrmrz.searchgithub.data.entities.RepoEntity
-import dev.usrmrz.searchgithub.data.entities.SearchResultEntity
+import dev.usrmrz.searchgithub.domain.model.Contributor
+import dev.usrmrz.searchgithub.domain.model.Repo
+import dev.usrmrz.searchgithub.domain.model.RepoSearchResult
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 
 @Dao
 //@Suppress("unused")
 abstract class RepoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insert(vararg repos: RepoEntity)
+    abstract suspend fun insert(vararg repos: Repo)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertContributors(contributors: List<ContributorEntity>)
+    abstract suspend fun insertContributors(contributors: List<Contributor>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertRepos(repositories: List<RepoEntity>)
+    abstract suspend fun insertRepos(repositories: List<Repo>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun createRepoIfNotExists(repo: RepoEntity): Long
+    abstract suspend fun createRepoIfNotExists(repo: Repo): Long
 
     @Query("SELECT * FROM repo WHERE owner_login = :ownerLogin AND name = :name")
-    abstract fun load(ownerLogin: String, name: String): Flow<RepoEntity?>
+    abstract fun load(ownerLogin: String, name: String): Flow<Repo>
 
     @Query(
         """
@@ -37,7 +37,7 @@ abstract class RepoDao {
        ORDER BY contributions DESC
     """
     )
-    abstract fun loadContributors(owner: String, name: String): Flow<List<ContributorEntity>>
+    abstract fun loadContributors(owner: String, name: String): Flow<List<Contributor>>
 
     @Query(
         """
@@ -46,28 +46,27 @@ abstract class RepoDao {
        ORDER BY stars DESC
     """
     )
-    abstract fun loadRepositories(owner: String): Flow<List<RepoEntity>>
+    abstract fun loadRepositories(owner: String): Flow<List<Repo>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insert(result: SearchResultEntity)
+    abstract suspend fun insert(result: RepoSearchResult)
 
     @Query("SELECT * FROM RepoSearchResult WHERE `query` = :query")
-    abstract fun search(query: String): Flow<SearchResultEntity?>
+    abstract fun search(query: String): Flow<RepoSearchResult?>
 
-    @Query("SELECT * FROM repo WHERE id in (:repoIds)")
-    protected abstract fun loadById(repoIds: List<Int>): Flow<List<RepoEntity>>
-
-    suspend fun loadOrdered(repoIds: List<Int>): List<RepoEntity> {
+    fun loadOrdered(repoIds: List<Int>): Flow<List<Repo>> {
         val order = SparseIntArray()
-        repoIds.withIndex().forEach {
-            order.put(it.value, it.index)
+        repoIds.withIndex().forEach { order.put(it.value, it.index) }
+        return loadById(repoIds).map { list ->
+            list.sortedWith(compareBy { order.get(it.id) })
         }
-        val repositories = loadById(repoIds).firstOrNull().orEmpty()
-        return repositories.sortedWith(compareBy { order.get(it.id) })
     }
 
+    @Query("SELECT * FROM repo WHERE id in (:repoIds)")
+    protected abstract fun loadById(repoIds: List<Int>): Flow<List<Repo>>
+
     @Query("SELECT * FROM RepoSearchResult WHERE `query` = :query")
-    abstract suspend fun findSearchResult(query: String): SearchResultEntity?
+    abstract fun findSearchResult(query: String): RepoSearchResult?
 }
 
 

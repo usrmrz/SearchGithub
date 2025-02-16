@@ -2,22 +2,23 @@ package dev.usrmrz.searchgithub.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import dev.usrmrz.searchgithub.data.entities.ContributorEntity
-import dev.usrmrz.searchgithub.data.entities.RepoEntity
-import dev.usrmrz.searchgithub.data.entities.SearchResultEntity
-import dev.usrmrz.searchgithub.data.entities.UserEntity
+import dev.usrmrz.searchgithub.domain.model.Contributor
+import dev.usrmrz.searchgithub.domain.model.Repo
+import dev.usrmrz.searchgithub.domain.model.RepoSearchResult
+import dev.usrmrz.searchgithub.domain.model.User
 
 @Database(
     entities = [
-        UserEntity::class,
-        RepoEntity::class,
-        ContributorEntity::class,
-        SearchResultEntity::class],
+        User::class,
+        Repo::class,
+        Contributor::class,
+        RepoSearchResult::class],
     version = 2,
     exportSchema = false,
 )
 abstract class GithubDb : RoomDatabase() {
-    abstract val repoDao: RepoDao
+    abstract fun repoDao(): RepoDao
+    abstract fun userDao(): UserDao
 
     companion object {
         const val DATABASE_NAME = "github_db"

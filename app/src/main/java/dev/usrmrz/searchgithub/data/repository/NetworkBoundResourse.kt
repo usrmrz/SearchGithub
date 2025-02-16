@@ -1,68 +1,50 @@
 package dev.usrmrz.searchgithub.data.repository
 
-import androidx.annotation.MainThread
-import androidx.annotation.WorkerThread
 import dev.usrmrz.searchgithub.data.api.ApiEmptyResponse
 import dev.usrmrz.searchgithub.data.api.ApiErrorResponse
 import dev.usrmrz.searchgithub.data.api.ApiResponse
 import dev.usrmrz.searchgithub.data.api.ApiSuccessResponse
 import dev.usrmrz.searchgithub.domain.model.Resource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 
 abstract class NetworkBoundResource<ResultType, RequestType> {
 
-    fun asFlow(): Flow<Resource<ResultType>> = flow {
-        // Загружаем данные из базы данных
-        val dbData = loadFromDb().first()
-
-        // Проверяем, нужно ли загружать данные из сети
-        if(shouldFetch(dbData)) {
-            emit(Resource.Loading(dbData))
-
-            // Загружаем данные из сети
-            when(val apiResponse = createCall().first()) {
-                is ApiSuccessResponse -> {
-                    // Сохраняем данные в базу данных
+    fun asFlow() = flow<Resource<ResultType>> {
+        emit(Resource.loading(null))
+        val dbDate = loadFromDb().firstOrNull()
+        if(shouldFetch(dbDate)) {
+            emit(Resource.loading(dbDate))
+            val apiResponse = createCall()
+            when(apiResponse) {
+                is ApiSuccessResponse<RequestType> -> {
                     saveCallResult(processResponse(apiResponse))
-                    // Загружаем обновлённые данные из базы данных
-                    emit(Resource.Success(loadFromDb().first()))
+                    emit(Resource.success(loadFromDb().first()))
                 }
-                is ApiEmptyResponse -> {
-                    // Если ответ пустой, просто загружаем данные из базы данных
-                    emit(Resource.Success(dbData))
+
+                is ApiEmptyResponse<RequestType> -> {
+                    emit(Resource.loading(dbDate))
                 }
-                is ApiErrorResponse -> {
-                    // Обрабатываем ошибку
-                    onFetchFailed()
-                    emit(Resource.Error(apiResponse.errorMessage, dbData))
+
+                is ApiErrorResponse<RequestType> -> {
+                    emit(Resource.error(null, "ApiErrorResponse<RequestType>"))
                 }
             }
-        } else {
-            // Если данные не нужно загружать из сети, просто возвращаем данные из базы данных
-            emit(Resource.Success(dbData))
         }
-    }.catch { e ->
-        // Обрабатываем исключения
-        emit(Resource.Error(e.message ?: "Unknown error", null))
     }
 
     protected open fun onFetchFailed() {}
 
-    @WorkerThread
-    protected open fun processResponse(response: ApiSuccessResponse<RequestType>): RequestType = response.body
+    protected open fun processResponse(response: ApiSuccessResponse<RequestType>): RequestType =
+        response.body
 
-    @WorkerThread
     protected abstract suspend fun saveCallResult(item: RequestType)
 
-    @MainThread
-    protected abstract suspend fun shouldFetch(data: ResultType?): Boolean
+    protected abstract fun shouldFetch(data: ResultType?): Boolean
 
-    @MainThread
     protected abstract fun loadFromDb(): Flow<ResultType>
 
-    @MainThread
-    protected abstract suspend fun createCall(): Flow<ApiResponse<RequestType>>
+    protected abstract suspend fun createCall(): ApiResponse<RequestType>
 }

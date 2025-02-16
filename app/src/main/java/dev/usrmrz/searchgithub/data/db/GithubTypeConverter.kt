@@ -1,5 +1,6 @@
 package dev.usrmrz.searchgithub.data.db
 
+import android.util.Log
 import androidx.room.TypeConverter
 
 object GithubTypeConverters {
@@ -10,7 +11,8 @@ object GithubTypeConverters {
             it.split(",").map {
                 try {
                     it.toInt()
-                } catch (ex: NumberFormatException) {
+                } catch (e: NumberFormatException) {
+                    Log.d("TAG",e.message.toString())
                     null
                 }
             }

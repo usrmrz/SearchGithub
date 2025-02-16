@@ -5,3 +5,11 @@ package dev.usrmrz.searchgithub.presentation.search
 //    data class Success(val data: RepoSearchResponse) : GitUiState
 //    object Error : GitUiState
 //    }
+
+
+
+
+
+
+
+

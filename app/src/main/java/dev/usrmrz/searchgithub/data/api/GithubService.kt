@@ -1,56 +1,47 @@
 package dev.usrmrz.searchgithub.data.api
 
-import dev.usrmrz.searchgithub.domain.model.ContributorModel
-import dev.usrmrz.searchgithub.domain.model.RepoModel
-import dev.usrmrz.searchgithub.domain.model.RepoSearchResponse
-import dev.usrmrz.searchgithub.domain.model.UserModel
+import dev.usrmrz.searchgithub.domain.model.Contributor
+import dev.usrmrz.searchgithub.domain.model.Repo
+import dev.usrmrz.searchgithub.domain.model.User
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-@Suppress("unused")
+//@Suppress("unused")
 interface GithubService {
 
     @GET("users/{login}")
-    suspend fun getUser(
-        @Path("login")
-        login: String
-    ): ApiResponse<UserModel>
+    fun getUser(
+        @Path("login") login: String
+    ): Flow<ApiResponse<User>>
 
     @GET("users/{login}/repos")
     fun getRepos(
-        @Path("login")
-        login: String
-    ): Flow<ApiResponse<List<RepoModel>>>
+        @Path("login") login: String
+    ): ApiResponse<List<Repo>>
 
     @GET("repos/{owner}/{name}")
-    suspend fun getRepo(
-        @Path("owner")
-        owner: String,
-        @Path("name")
-        name: String
-    ): ApiResponse<RepoModel>
+    fun getRepo(
+        @Path("owner") owner: String,
+        @Path("name") name: String
+    ): ApiResponse<Repo>
 
     @GET("repos/{owner}/{name}/contributors")
     fun getContributors(
-        @Path("owner")
-        owner: String,
-        @Path("name")
-        name: String
-    ): Flow<ApiResponse<List<ContributorModel>>>
+        @Path("owner") owner: String,
+        @Path("name") name: String
+    ): ApiResponse<List<Contributor>>
 
     @GET("search/repositories")
-    suspend fun searchRepos(
-        @Query("q")
-        query: String
+    fun searchRepos(
+        @Query("q") query: String
     ): ApiResponse<RepoSearchResponse>
 
     @GET("search/repositories")
-    suspend fun searchRepos(
-        @Query("q")
-        query: String,
-        @Query("page")
-        page: Int
+    fun searchRepos(
+        @Query("q") query: String,
+        @Query("page") page: Int
     ): ApiResponse<RepoSearchResponse>
 }
