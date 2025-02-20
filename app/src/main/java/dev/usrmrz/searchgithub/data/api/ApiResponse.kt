@@ -53,8 +53,8 @@ data class ApiSuccessResponse<T>(
         body = body,
         links = linkHeader?.extractLinks() ?: emptyMap()
     )
-
     val nextPage: Int? by lazy(LazyThreadSafetyMode.NONE) {
+        Log.d("ApiRsp_1","nextPage: $nextPage body: $body links: $links")
         links[NEXT_LINK]?.let { next ->
             val matcher = PAGE_PATTERN.matcher(next)
             if (!matcher.find() || matcher.groupCount() != 1) {
@@ -85,11 +85,15 @@ data class ApiSuccessResponse<T>(
                     links[matcher.group(2)!!] = matcher.group(1)!!
                 }
             }
+            Log.d("ApiRsp_2","links: $links")
             return links
         }
 
     }
 }
 
-data class ApiErrorResponse<T>(val errorMessage: String) : ApiResponse<T>()
+data class ApiErrorResponse<T>(
+    val errorMessage: String
+) : ApiResponse<T>()
+
 

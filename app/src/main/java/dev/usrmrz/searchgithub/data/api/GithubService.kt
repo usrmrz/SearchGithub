@@ -20,28 +20,28 @@ interface GithubService {
     @GET("users/{login}/repos")
     fun getRepos(
         @Path("login") login: String
-    ): ApiResponse<List<Repo>>
+    ): Flow<ApiResponse<List<Repo>>>
 
     @GET("repos/{owner}/{name}")
     fun getRepo(
         @Path("owner") owner: String,
         @Path("name") name: String
-    ): ApiResponse<Repo>
+    ): Flow<ApiResponse<Repo>>
 
     @GET("repos/{owner}/{name}/contributors")
     fun getContributors(
         @Path("owner") owner: String,
         @Path("name") name: String
-    ): ApiResponse<List<Contributor>>
+    ): Flow<ApiResponse<List<Contributor>>>
 
     @GET("search/repositories")
     fun searchRepos(
         @Query("q") query: String
-    ): ApiResponse<RepoSearchResponse>
+    ): Flow<ApiResponse<RepoSearchResponse>>
 
     @GET("search/repositories")
     fun searchRepos(
         @Query("q") query: String,
         @Query("page") page: Int
-    ): ApiResponse<RepoSearchResponse>
+    ): Call<RepoSearchResponse>
 }

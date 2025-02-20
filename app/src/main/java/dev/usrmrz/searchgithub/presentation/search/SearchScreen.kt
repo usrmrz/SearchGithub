@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -31,10 +32,12 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.usrmrz.searchgithub.R
 import dev.usrmrz.searchgithub.domain.model.Repo
+import dev.usrmrz.searchgithub.domain.model.Status
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -52,7 +55,10 @@ fun SearchScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val listState = rememberLazyListState()
 
-    Log.d("vals from SearchScreen", "query: $query; results: $results loadMoreStatus: $loadMoreStatus searchText: $searchText")
+    Log.d(
+        "vals from SScr1",
+        "query: $query; results: $results loadMoreStatus: $loadMoreStatus searchText: $searchText"
+    )
 
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo }
@@ -64,10 +70,15 @@ fun SearchScreen(
                 }
             }
     }
-
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(8.dp)) {
+    Log.d(
+        "vals from SScr2",
+        "query: $query; results: $results loadMoreStatus: $loadMoreStatus searchText: $searchText"
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
+    ) {
         OutlinedTextField(
             value = searchText,
             onValueChange = { searchText = it },
@@ -82,24 +93,24 @@ fun SearchScreen(
             )
         )
 
+        if(results.status == Status.LOADING) {
+            Log.d("SrchS_if", "results: $results, results.st: ${results.status}")
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+        }
 
-//        if(results.status == Status.LOADING) {
-//            LinearProgressIndicator(modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(vertical = 8.dp))
-//        }
-
-
-//        if(results == Status.SUCCESS && results.data.isNullOrEmpty()) {
-//            Text(
-//                text = stringResource(R.string.empty_search_result, query),
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(16.dp),
-//                textAlign = TextAlign.Center
-//            )
-//        }
-
+        if(results.status == Status.SUCCESS && results.data.isNullOrEmpty()) {
+            Text(
+                text = stringResource(R.string.empty_search_result, query),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                textAlign = TextAlign.Center
+            )
+        }
 
         LazyColumn(
             state = listState,
@@ -110,11 +121,9 @@ fun SearchScreen(
             }
         }
 
-
         if(loadMoreStatus.isRunning) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
         }
-
 
         loadMoreStatus.errorMessageIfNotHandled?.let { errorMessage ->
             LaunchedEffect(errorMessage) {
@@ -122,6 +131,10 @@ fun SearchScreen(
             }
         }
     }
+    Log.d(
+        "vals from SScr3",
+        "query: $query; results: $results loadMoreStatus: $loadMoreStatus searchText: $searchText"
+    )
 }
 
 @Composable

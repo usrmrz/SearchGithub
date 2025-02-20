@@ -6,7 +6,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import dev.usrmrz.searchgithub.presentation.repo.RepoScreen
 import dev.usrmrz.searchgithub.presentation.search.SearchScreen
+import dev.usrmrz.searchgithub.presentation.user.UserScreen
 
 @Composable
 fun GithubNavigation(navController: NavHostController) {
@@ -29,14 +31,14 @@ fun GithubNavigation(navController: NavHostController) {
         ) { backStackEntry ->
             val owner = backStackEntry.arguments?.getString("owner") ?: return@composable
             val name = backStackEntry.arguments?.getString("name") ?: return@composable
-//            RepoScreen(
-//                owner = owner,
-//                name = name,
-//                onUserClick = { login, avatarUrl ->
-//                    val avatarPart = avatarUrl?.let { "/$it" } ?: ""
-//                    navController.navigate("user/$login$avatarPart")
-//                }
-//            )
+            RepoScreen(
+                name = name,
+                owner = owner,
+                onUserClick = { login, avatarUrl ->
+                    val avatarPart = avatarUrl.let { "/$it" }
+                    navController.navigate("user/$login$avatarPart")
+                }
+            )
         }
 
         composable(
@@ -52,13 +54,13 @@ fun GithubNavigation(navController: NavHostController) {
         ) { backStackEntry ->
             val login = backStackEntry.arguments?.getString("login") ?: return@composable
             val avatarUrl = backStackEntry.arguments?.getString("avatarUrl")
-//            UserScreen(
-//                login = login,
-//                avatarUrl = avatarUrl,
-//                onRepoClick = { owner, name ->
-//                    navController.navigate("repo/$owner/$name")
-//                }
-//            )
+            UserScreen(
+                login = login,
+                avatarUrl = avatarUrl.toString(),
+                onRepoClick = { owner, name ->
+                    navController.navigate("repo/$owner/$name")
+                }
+            )
         }
     }
 }

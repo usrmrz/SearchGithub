@@ -1,5 +1,6 @@
 package dev.usrmrz.searchgithub.data.repository
 
+import android.util.Log
 import dev.usrmrz.searchgithub.data.api.ApiEmptyResponse
 import dev.usrmrz.searchgithub.data.api.ApiErrorResponse
 import dev.usrmrz.searchgithub.data.api.ApiResponse
@@ -17,19 +18,23 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
         val dbDate = loadFromDb().firstOrNull()
         if(shouldFetch(dbDate)) {
             emit(Resource.loading(dbDate))
-            val apiResponse = createCall()
-            when(apiResponse) {
-                is ApiSuccessResponse<RequestType> -> {
-                    saveCallResult(processResponse(apiResponse))
-                    emit(Resource.success(loadFromDb().first()))
-                }
+            createCall().collect { apiResponse ->
+                when(apiResponse) {
+                    is ApiSuccessResponse<RequestType> -> {
+                        saveCallResult(processResponse(apiResponse))
+                        Log.d("N_B_R_1","apiResponse: $apiResponse")
+                        emit(Resource.success(loadFromDb().first()))
+                    }
 
-                is ApiEmptyResponse<RequestType> -> {
-                    emit(Resource.loading(dbDate))
-                }
+                    is ApiEmptyResponse<RequestType> -> {
+                        Log.d("N_B_R_2","dbDate: $dbDate")
+                        emit(Resource.loading(dbDate))
+                    }
 
-                is ApiErrorResponse<RequestType> -> {
-                    emit(Resource.error(null, "ApiErrorResponse<RequestType>"))
+                    is ApiErrorResponse<RequestType> -> {
+                        Log.d("N_B_R_3","apiResponse: $apiResponse dbDate: $dbDate")
+                        emit(Resource.error(null, "ApiErrorResponse<RequestType> is launching"))
+                    }
                 }
             }
         }
@@ -46,5 +51,5 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
 
     protected abstract fun loadFromDb(): Flow<ResultType>
 
-    protected abstract suspend fun createCall(): ApiResponse<RequestType>
+    protected abstract suspend fun createCall(): Flow<ApiResponse<RequestType>>
 }

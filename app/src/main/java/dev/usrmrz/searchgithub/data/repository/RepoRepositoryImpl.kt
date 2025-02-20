@@ -1,5 +1,7 @@
 package dev.usrmrz.searchgithub.data.repository
 
+import android.R.id.input
+import android.util.Log
 import androidx.annotation.OpenForTesting
 import androidx.room.withTransaction
 import dev.usrmrz.searchgithub.data.api.ApiSuccessResponse
@@ -11,6 +13,7 @@ import dev.usrmrz.searchgithub.domain.model.Contributor
 import dev.usrmrz.searchgithub.domain.model.Repo
 import dev.usrmrz.searchgithub.domain.model.RepoSearchResult
 import dev.usrmrz.searchgithub.domain.model.Resource
+import dev.usrmrz.searchgithub.domain.repository.RepoRepository
 import dev.usrmrz.searchgithub.util.RateLimiter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -23,15 +26,15 @@ import javax.inject.Singleton
 @Suppress("unused")
 @Singleton
 @OpenForTesting
-class RepoRepository @Inject constructor(
+class RepoRepositoryImpl @Inject constructor(
     private val db: GithubDb,
     private val dao: RepoDao,
     private val api: GithubService
-) {
+) : RepoRepository {
 
     private val repoListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
 
-    fun loadRepos(owner: String): Flow<Resource<List<Repo>>> {
+    override fun loadRepos(owner: String): Flow<Resource<List<Repo>>> {
         return object : NetworkBoundResource<List<Repo>, List<Repo>>() {
             override suspend fun saveCallResult(item: List<Repo>) {
                 dao.insertRepos(item)
@@ -49,7 +52,7 @@ class RepoRepository @Inject constructor(
         }.asFlow()
     }
 
-    fun loadRepo(owner: String, name: String): Flow<Resource<Repo>> {
+    override fun loadRepo(owner: String, name: String): Flow<Resource<Repo>> {
         return object : NetworkBoundResource<Repo, Repo>() {
             override suspend fun saveCallResult(item: Repo) {
                 dao.insert(item)
@@ -68,7 +71,7 @@ class RepoRepository @Inject constructor(
         }.asFlow()
     }
 
-    fun loadContributors(owner: String, name: String): Flow<Resource<List<Contributor>>> {
+    override fun loadContributors(owner: String, name: String): Flow<Resource<List<Contributor>>> {
         return object : NetworkBoundResource<List<Contributor>, List<Contributor>>() {
             override suspend fun saveCallResult(item: List<Contributor>) {
                 item.forEach {
@@ -102,7 +105,7 @@ class RepoRepository @Inject constructor(
         }.asFlow()
     }
 
-    fun searchNextPage(query: String): Flow<Resource<Boolean>?> {
+    override fun searchNextPage(query: String): Flow<Resource<Boolean>?> {
         val fetchNextSearchPageTask = FetchNextSearchPageTask(
 //            query = query,
 //            api = api,
@@ -112,9 +115,15 @@ class RepoRepository @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun search(query: String): Flow<Resource<List<Repo>>> {
+    override fun search(query: String): Flow<Resource<List<Repo>>> {
+
+        Log.d("vals from RepoRep", "query: $query")
+
         return object : NetworkBoundResource<List<Repo>, RepoSearchResponse>() {
             override suspend fun saveCallResult(item: RepoSearchResponse) {
+
+                Log.d("vals from RepoRp2", "input: $input; item: $item")
+
                 val repoIds = item.items.map { it.id }
                 val repoSearchResult = RepoSearchResult(
                     query = query,
@@ -122,13 +131,14 @@ class RepoRepository @Inject constructor(
                     totalCount = item.total,
                     next = item.nextPage
                 )
+                Log.d("vals from RepoRp3", "repoIds: $repoIds")
                 db.withTransaction {
                     dao.insertRepos(item.items)
                     dao.insert(repoSearchResult)
                 }
             }
 
-            override fun shouldFetch(data: List<Repo>?) = data == null
+            override fun shouldFetch(data: List<Repo>?) = data.isNullOrEmpty()
             override fun loadFromDb(): Flow<List<Repo>> {
                 return dao.search(query).flatMapLatest { searchData ->
                     (if(searchData == null) {

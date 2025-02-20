@@ -1,13 +1,14 @@
 package dev.usrmrz.searchgithub.presentation.search
 
+import android.R.id.input
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.usrmrz.searchgithub.data.repository.RepoRepository
 import dev.usrmrz.searchgithub.domain.model.Repo
 import dev.usrmrz.searchgithub.domain.model.Resource
 import dev.usrmrz.searchgithub.domain.model.Status
+import dev.usrmrz.searchgithub.domain.repository.RepoRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -32,7 +33,6 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val repoRepository: RepoRepository
 ) : ViewModel() {
-
     private val _query = MutableStateFlow("")
     private val nextPageHandler = NextPageHandler(repoRepository, viewModelScope)
 
@@ -48,15 +48,16 @@ class SearchViewModel @Inject constructor(
             } else {
                 repoRepository.search(search)
             }
-        }
-        .stateIn(viewModelScope, SharingStarted.Lazily, Resource.loading(null))
-
+        }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.loading(null))
     val loadMoreStatus: StateFlow<LoadMoreState> = nextPageHandler.loadMoreState
 
     fun setQuery(originalInput: String) {
         val input = originalInput.lowercase(Locale.getDefault()).trim()
 
-        Log.d("vals from SearchVM", "input: $input; results: $results loadMoreStatus: $loadMoreStatus nextPageHandler: $nextPageHandler")
+        Log.d(
+            "vals from SearchVM",
+            "input: $input; results.v: ${results.value} loadMoreStatus: $loadMoreStatus nextPageHandler: $nextPageHandler"
+        )
 
         if(input == _query.value) return
         nextPageHandler.reset()
@@ -70,15 +71,12 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-
     fun refresh() {
         _query.value = _query.value
     }
 
-
     class LoadMoreState(val isRunning: Boolean, val errorMessage: String?) {
         private var handledError = false
-
 
         val errorMessageIfNotHandled: String?
             get() = if(handledError) null else {
@@ -113,25 +111,29 @@ class SearchViewModel @Inject constructor(
                         _loadMoreState.value = LoadMoreState(false, error.message)
                         _hasMore = true
                     }
-//                    .collectLatest { result ->
-//                        when(result.status) {
-//                            Status.SUCCESS -> {
-//                                _hasMore = result.data == true
-//                                _loadMoreState.value = LoadMoreState(false, null)
-//                            }
-//
-//                            Status.ERROR -> {
-//                                _hasMore = true
-//                                _loadMoreState.value = LoadMoreState(false, result.message)
-//                            }
-//
-//                            Status.LOADING -> {}
-//                            null -> true
-//                        }
-//                    }
+                    .collectLatest { result ->
+                        when(result?.status) {
+                            Status.SUCCESS -> {
+                                _hasMore = result.data == true
+                                _loadMoreState.value = LoadMoreState(false, null)
+                            }
+
+                            Status.ERROR -> {
+                                _hasMore = true
+                                _loadMoreState.value = LoadMoreState(false, result.message)
+                            }
+
+                            Status.LOADING -> {}
+                            null -> true
+                        }
+                        Log.d(
+                            "vals from SrchVM2",
+                            "input: $input; result: $result resultData: {$result.data}"
+                        )
+
+                    }
             }
         }
-
 
         fun reset() {
             currentJob?.cancel()

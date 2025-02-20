@@ -5,18 +5,18 @@ package dev.usrmrz.searchgithub.domain.model
  * A generic class that holds a value with its loading status.
  * @param <T>
 </T> */
-data class Resource<T>(val data: T? = null, val message: String? = null) {
+data class Resource<T>(val status: Status, val data: T? = null, val message: String? = null) {
     companion object {
         fun <T> success(data: T): Resource<T> {
-            return Resource(data)
+            return Resource(Status.SUCCESS, data)
         }
 
         fun <T> error(data: T?, msg: String): Resource<T> {
-            return Resource(data, msg)
+            return Resource(Status.ERROR, data, msg)
         }
 
         fun <T> loading(data: T?): Resource<T> {
-            return Resource(data)
+            return Resource(Status.LOADING, data)
         }
     }
 }

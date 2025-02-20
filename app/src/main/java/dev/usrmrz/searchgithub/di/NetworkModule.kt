@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.usrmrz.searchgithub.BuildConfig
 import dev.usrmrz.searchgithub.data.api.GithubService
+import dev.usrmrz.searchgithub.util.FlowCallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -49,6 +50,7 @@ object NetworkModule {
         return Retrofit.Builder()
             .baseUrl("https://api.github.com/")
             .addConverterFactory(GsonConverterFactory.create(gson))
+            .addCallAdapterFactory(FlowCallAdapterFactory())
             .client(client)
             .build()
     }
