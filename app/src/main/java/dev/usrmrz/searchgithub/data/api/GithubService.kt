@@ -13,35 +13,35 @@ import retrofit2.http.Query
 interface GithubService {
 
     @GET("users/{login}")
-    fun getUser(
+    suspend fun getUser(
         @Path("login") login: String
-    ): Flow<ApiResponse<User>>
+    ): User
 
     @GET("users/{login}/repos")
-    fun getRepos(
+    suspend fun getRepos(
         @Path("login") login: String
-    ): Flow<ApiResponse<List<Repo>>>
+    ): List<Repo>
 
     @GET("repos/{owner}/{name}")
-    fun getRepo(
+    suspend fun getRepo(
         @Path("owner") owner: String,
         @Path("name") name: String
-    ): Flow<ApiResponse<Repo>>
+    ): Repo
 
     @GET("repos/{owner}/{name}/contributors")
-    fun getContributors(
+    suspend fun getContributors(
         @Path("owner") owner: String,
         @Path("name") name: String
-    ): Flow<ApiResponse<List<Contributor>>>
+    ): List<Contributor>
 
     @GET("search/repositories")
-    fun searchRepos(
+    suspend fun searchRepos(
         @Query("q") query: String
-    ): Flow<ApiResponse<RepoSearchResponse>>
+    ): RepoSearchResponse
 
     @GET("search/repositories")
     fun searchRepos(
         @Query("q") query: String,
         @Query("page") page: Int
-    ): Call<RepoSearchResponse>
+    ): RepoSearchResponse
 }

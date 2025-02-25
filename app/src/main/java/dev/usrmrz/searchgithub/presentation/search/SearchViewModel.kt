@@ -44,11 +44,11 @@ class SearchViewModel @Inject constructor(
         .distinctUntilChanged()
         .flatMapLatest { search ->
             if(search.isBlank()) {
-                flowOf(Resource.success(emptyList()))
+                flowOf(Resource.Success(emptyList()))
             } else {
                 repoRepository.search(search)
             }
-        }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.loading(null))
+        }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading(null))
     val loadMoreStatus: StateFlow<LoadMoreState> = nextPageHandler.loadMoreState
 
     fun setQuery(originalInput: String) {
@@ -72,7 +72,9 @@ class SearchViewModel @Inject constructor(
     }
 
     fun refresh() {
-        _query.value = _query.value
+        _query.value.let {
+            _query.value = it
+        }
     }
 
     class LoadMoreState(val isRunning: Boolean, val errorMessage: String?) {

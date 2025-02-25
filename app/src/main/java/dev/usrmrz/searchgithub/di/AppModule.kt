@@ -29,8 +29,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRepoRepository(db: GithubDb, dao: RepoDao, api: GithubService): RepoRepository {
-        return RepoRepositoryImpl(db, dao, api)
+    fun provideRepoRepository(api: GithubService, dao: RepoDao, db: GithubDb): RepoRepository {
+        return RepoRepositoryImpl(api, dao, db)
     }
 
     @Singleton

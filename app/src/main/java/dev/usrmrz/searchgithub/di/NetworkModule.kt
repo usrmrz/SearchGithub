@@ -8,7 +8,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.usrmrz.searchgithub.BuildConfig
 import dev.usrmrz.searchgithub.data.api.GithubService
-import dev.usrmrz.searchgithub.util.FlowCallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -23,9 +22,10 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideGson(): Gson = GsonBuilder()
-        .setDateFormat("dd-MM-yyyy")
-        .setPrettyPrinting()
-        .serializeNulls()
+//        .setDateFormat("dd-MM-yyyy")
+//        .setPrettyPrinting()
+//        .serializeNulls()
+//        .registerTypeAdapter(ApiResponse::class.java, ApiResponseAdapter<Any>(Any::class.java))
         .create()
 
     @Provides
@@ -50,7 +50,7 @@ object NetworkModule {
         return Retrofit.Builder()
             .baseUrl("https://api.github.com/")
             .addConverterFactory(GsonConverterFactory.create(gson))
-            .addCallAdapterFactory(FlowCallAdapterFactory())
+//            .addCallAdapterFactory(FlowCallAdapterFactory())
             .client(client)
             .build()
     }

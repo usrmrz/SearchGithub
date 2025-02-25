@@ -13,22 +13,22 @@ import kotlinx.coroutines.flow.map
 
 @Dao
 //@Suppress("unused")
-abstract class RepoDao {
+interface RepoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insert(vararg repos: Repo)
+    suspend fun insert(vararg repos: Repo)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertContributors(contributors: List<Contributor>)
+    suspend fun insertContributors(contributors: List<Contributor>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertRepos(repositories: List<Repo>)
+    suspend fun insertRepos(repositories: List<Repo>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun createRepoIfNotExists(repo: Repo): Long
+    suspend fun createRepoIfNotExists(repo: Repo): Long
 
     @Query("SELECT * FROM repo WHERE owner_login = :ownerLogin AND name = :name")
-    abstract fun load(ownerLogin: String, name: String): Flow<Repo>
+    fun load(ownerLogin: String, name: String): Flow<Repo>
 
     @Query(
         """
@@ -37,7 +37,7 @@ abstract class RepoDao {
        ORDER BY contributions DESC
     """
     )
-    abstract fun loadContributors(owner: String, name: String): Flow<List<Contributor>>
+    fun loadContributors(owner: String, name: String): Flow<List<Contributor>>
 
     @Query(
         """
@@ -46,13 +46,13 @@ abstract class RepoDao {
        ORDER BY stars DESC
     """
     )
-    abstract fun loadRepositories(owner: String): Flow<List<Repo>>
+    fun loadRepositories(owner: String): Flow<List<Repo>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insert(result: RepoSearchResult)
+    suspend fun insert(result: RepoSearchResult)
 
     @Query("SELECT * FROM RepoSearchResult WHERE `query` = :query")
-    abstract fun search(query: String): Flow<RepoSearchResult?>
+    fun search(query: String): Flow<RepoSearchResult?>
 
     fun loadOrdered(repoIds: List<Int>): Flow<List<Repo>> {
         val order = SparseIntArray()
@@ -63,10 +63,10 @@ abstract class RepoDao {
     }
 
     @Query("SELECT * FROM repo WHERE id in (:repoIds)")
-    protected abstract fun loadById(repoIds: List<Int>): Flow<List<Repo>>
+    fun loadById(repoIds: List<Int>): Flow<List<Repo>>
 
     @Query("SELECT * FROM RepoSearchResult WHERE `query` = :query")
-    abstract fun findSearchResult(query: String): RepoSearchResult?
+    fun findSearchResult(query: String): RepoSearchResult?
 }
 
 
