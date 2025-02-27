@@ -56,8 +56,12 @@ fun SearchScreen(
     val listState = rememberLazyListState()
 
     Log.d(
-        "vals from SScr1",
-        "query: $query; results: $results loadMoreStatus: $loadMoreStatus searchText: $searchText"
+        "SScr1_1",
+        "query: $query; results: $results loadMoreStatus: $loadMoreStatus"
+    )
+    Log.d(
+        "SScr1_2",
+        "searchText: $searchText keyboardController: $keyboardController listState: $listState"
     )
 
     LaunchedEffect(listState) {
@@ -65,15 +69,15 @@ fun SearchScreen(
             .map { visibleItems -> visibleItems.lastOrNull()?.index }
             .distinctUntilChanged()
             .collectLatest { lastVisibleItem ->
-                if(lastVisibleItem != null && lastVisibleItem >= results.data?.size.orZero() - 1) {
+                if(lastVisibleItem != null && lastVisibleItem >= results.data!!.size - 1) {
+                    Log.d(
+                        "SScr_LE",
+                        "listState: $listState; lastVisibleItem: $lastVisibleItem results: $results results.data: ${results.data?.size.orZero() - 1}"
+                    )
                     viewModel.loadNextPage()
                 }
             }
     }
-    Log.d(
-        "vals from SScr2",
-        "query: $query; results: $results loadMoreStatus: $loadMoreStatus searchText: $searchText"
-    )
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -132,7 +136,7 @@ fun SearchScreen(
         }
     }
     Log.d(
-        "vals from SScr3",
+        "SScr3",
         "query: $query; results: $results loadMoreStatus: $loadMoreStatus searchText: $searchText"
     )
 }

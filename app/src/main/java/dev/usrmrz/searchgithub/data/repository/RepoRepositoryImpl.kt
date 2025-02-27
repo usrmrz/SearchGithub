@@ -88,6 +88,10 @@ class RepoRepositoryImpl @Inject constructor(
     }
 
     override fun searchNextPage(query: String): Flow<Resource<Boolean>?> {
+        Log.d(
+            "RpRp_srchNP",
+            "query: $query"
+        )
         val fetchNextSearchPageTask = FetchNextSearchPageTask(
             query = query,
             api = api,
@@ -122,10 +126,10 @@ class RepoRepositoryImpl @Inject constructor(
 
             override fun shouldFetch(data: List<Repo>?) = data.isNullOrEmpty()
             override fun loadFromDb(): Flow<List<Repo>> {
-                Log.d("RepoRp_loadFrmDb", "query: $query")
+                Log.d("RepoRp_lFDb", "query: $query")
                 return dao.search(query).flatMapLatest { searchData ->
                     (if(searchData == null) {
-                        Log.d("RepoRp_loadFrmDb_searchData", "searchData: $searchData")
+                        Log.d("RepoRp_ldFDb_sDt", "searchData: $searchData")
                         //before: emptyList<Repo>()
                         flowOf(emptyList())//gpt listing
                     } else {

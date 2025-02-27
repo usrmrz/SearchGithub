@@ -5,6 +5,26 @@ package dev.usrmrz.searchgithub.domain.model
  * A generic class that holds a value with its loading status.
  * @param <T>
 </T> */
+//version with sealed class
+sealed class Resource<T>(
+    val status: Status,
+    val data: T? = null,
+    val message: String? = null
+) {
+    class Success<T>(
+        data: T
+    ) : Resource<T>(Status.SUCCESS, data)
+
+    class Loading<T>(
+        data: T? = null
+    ) : Resource<T>(Status.LOADING, data)
+
+    class Error<T>(
+        message: String,
+        data: T? = null
+    ) : Resource<T>(Status.ERROR, data, message)
+}
+
 //data class Resource<T>(val status: Status, val data: T? = null, val message: String? = null) {
 //    companion object {
 //        fun <T> success(data: T): Resource<T> {
@@ -18,14 +38,3 @@ package dev.usrmrz.searchgithub.domain.model
 //        }
 //    }
 //}
-
-//version with sealed class
-sealed class Resource<T>(
-    val status: Status,
-    val data: T? = null,
-    val message: String? = null
-) {
-    class Success<T>(data: T) : Resource<T>(Status.SUCCESS, data)
-    class Loading<T>(data: T? = null) : Resource<T>(Status.LOADING, data)
-    class Error<T>(message: String, data: T? = null) : Resource<T>(Status.ERROR, data, message)
-}

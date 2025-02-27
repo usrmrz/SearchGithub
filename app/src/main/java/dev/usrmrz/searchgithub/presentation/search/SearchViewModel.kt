@@ -1,6 +1,5 @@
 package dev.usrmrz.searchgithub.presentation.search
 
-import android.R.id.input
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,7 +32,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val repoRepository: RepoRepository
 ) : ViewModel() {
-    private val _query = MutableStateFlow("")
+    private val _query = MutableStateFlow<String>("")
     private val nextPageHandler = NextPageHandler(repoRepository, viewModelScope)
 
     val query: StateFlow<String> = _query.asStateFlow()
@@ -44,28 +43,45 @@ class SearchViewModel @Inject constructor(
         .distinctUntilChanged()
         .flatMapLatest { search ->
             if(search.isBlank()) {
+                Log.d(
+                    "SrchVM_isB",
+                    "results: $results; results.v: ${results.value} search: $search"
+                )
                 flowOf(Resource.Success(emptyList()))
             } else {
+                Log.d(
+                    "SrchVM_el_isB",
+                    "results: $results; results.v: ${results.value} search: $search"
+                )
                 repoRepository.search(search)
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading(null))
+
     val loadMoreStatus: StateFlow<LoadMoreState> = nextPageHandler.loadMoreState
 
     fun setQuery(originalInput: String) {
         val input = originalInput.lowercase(Locale.getDefault()).trim()
 
         Log.d(
-            "vals from SearchVM",
-            "input: $input; results.v: ${results.value} loadMoreStatus: $loadMoreStatus nextPageHandler: $nextPageHandler"
+            "SrchVM_sQ",
+            "originalInput: $originalInput; input: $input"
         )
 
         if(input == _query.value) return
         nextPageHandler.reset()
+        Log.d(
+            "SrchVM_nPH",
+            "input: $input _query.v: ${_query.value}"
+        )
         _query.value = input
     }
 
     fun loadNextPage() {
         val currentQuery = _query.value
+        Log.d(
+            "SrchVM_lNP",
+            "currentQuery: $currentQuery"
+        )
         if(currentQuery.isNotBlank()) {
             nextPageHandler.queryNextPage(currentQuery)
         }
@@ -101,6 +117,10 @@ class SearchViewModel @Inject constructor(
         private var currentJob: Job? = null
 
         fun queryNextPage(query: String) {
+            Log.d(
+                "SrchVM_qNP",
+                "this.query: ${this.query}; query: $query"
+            )
             if(this.query == query) return
             reset()
             this.query = query
@@ -108,39 +128,69 @@ class SearchViewModel @Inject constructor(
             _loadMoreState.value = LoadMoreState(true, null)
 
             currentJob = this.coroutineScope.launch {
+
+                Log.d(
+                    "SrchVM_crJ",
+                    "currentJob: $currentJob"
+                )
+
                 repository.searchNextPage(query)
                     .catch { error ->
                         _loadMoreState.value = LoadMoreState(false, error.message)
                         _hasMore = true
                     }
                     .collectLatest { result ->
-                        when(result?.status) {
-                            Status.SUCCESS -> {
-                                _hasMore = result.data == true
-                                _loadMoreState.value = LoadMoreState(false, null)
-                            }
-
-                            Status.ERROR -> {
-                                _hasMore = true
-                                _loadMoreState.value = LoadMoreState(false, result.message)
-                            }
-
-                            Status.LOADING -> {}
-                            null -> true
-                        }
                         Log.d(
-                            "vals from SrchVM2",
-                            "input: $input; result: $result resultData: {$result.data}"
+                            "SrchVM_cL",
+                            "result: $result; result.st: ${result?.status}"
                         )
+                        if (result == null) {
+                            reset()
+                        } else {
+                            when(result.status) {
+                                Status.SUCCESS -> {
+                                    Log.d(
+                                        "SrchVM_cLS",
+                                        "result: $result; result.dt: ${result.data}"
+                                    )
+                                    _hasMore = result.data == true
+                                    _loadMoreState.value = LoadMoreState(false, null)
+                                }
 
+                                Status.ERROR -> {
+                                    Log.d(
+                                        "SrchVM_cLE",
+                                        "result: $result; result.dt: ${result.data}"
+                                    )
+                                    _hasMore = true
+                                    _loadMoreState.value = LoadMoreState(false, result.message)
+                                }
+
+                                Status.LOADING -> {
+                                    //Nothing
+                                    Log.d(
+                                        "SrchVM_cLL",
+                                        "result: $result; result.dt: ${result.data}"
+                                    )
+                                }
+                            }
+                        }
                     }
             }
         }
 
         fun reset() {
+            Log.d(
+                "SrchVM_rst",
+                "reset"
+            )
             currentJob?.cancel()
             _hasMore = true
             _loadMoreState.value = LoadMoreState(false, null)
+            Log.d(
+                "SrchVM_rst_lMS",
+                "_loadMoreState.value ${_loadMoreState.value}"
+            )
         }
     }
 }

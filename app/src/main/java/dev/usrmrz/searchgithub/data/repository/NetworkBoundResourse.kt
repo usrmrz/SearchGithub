@@ -1,5 +1,6 @@
 package dev.usrmrz.searchgithub.data.repository
 
+import android.util.Log
 import dev.usrmrz.searchgithub.data.api.ApiResponse
 import dev.usrmrz.searchgithub.data.api.safeApiCall
 import dev.usrmrz.searchgithub.domain.model.Resource
@@ -14,25 +15,45 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
     fun asFlow() = flow<Resource<ResultType>> {
         emit(Resource.Loading())
         val dbValue = loadFromDb().first()
-        if (shouldFetch(dbValue)) {
+        Log.d("NBR_lFDb", "dbValue: $dbValue")
+        if(shouldFetch(dbValue)) {
             emit(Resource.Loading(dbValue))
-            when (val apiResponse = safeApiCall { createCall() }) {
+            Log.d("NBR_sF", "dbValue: $dbValue")
+            when(val apiResponse = safeApiCall { createCall() }) {
                 is ApiResponse.Success -> {
+                    Log.d("NBR_ARSs", "apiResponse: $apiResponse")
                     saveCallResult(apiResponse.data)
-                    emitAll(loadFromDb().map { Resource.Success(it) })
+                    Log.d(
+                        "NBR_sCR",
+                        "apiResponse: $apiResponse; apiResponse.d: ${apiResponse.data}"
+                    )
+                    val emitted = loadFromDb().map { Resource.Success(it) }
+                    emitAll(emitted)
+                    Log.d("NBR_sCReA", "it: $emitted")
                 }
+
                 is ApiResponse.Empty -> {
-                    emitAll(loadFromDb().map { Resource.Success(it) })
+                    val emitted = loadFromDb().map { Resource.Success(it) }
+                    emitAll(emitted)
+                    Log.d("NBR_AREmp", "it: $emitted")
                 }
+
                 is ApiResponse.Error -> {
+                    Log.d("NBR_AREr", "it: Error")
                     onFetchFailed()
-                    emitAll(loadFromDb().map { Resource.Error(apiResponse.errorMessage, it) })
+                    Log.d("NBR_AREr", "onFF: ${onFetchFailed()}")
+                    val emitted = loadFromDb().map { Resource.Error(apiResponse.errorMessage, it) }
+                    emitAll(emitted)
+                    Log.d("NBR_AREr", "it: $emitted")
                 }
             }
         } else {
-            emitAll(loadFromDb().map { Resource.Success(it) })
+            val emitted = loadFromDb().map { Resource.Success(it) }
+            emitAll(emitted)
+            Log.d("NBR_elSF", "it: $emitted")
         }
     }
+
     protected open fun onFetchFailed() {}
     protected abstract suspend fun saveCallResult(item: RequestType)
     protected abstract fun shouldFetch(data: ResultType?): Boolean

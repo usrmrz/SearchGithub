@@ -68,5 +68,3 @@ interface RepoDao {
     @Query("SELECT * FROM RepoSearchResult WHERE `query` = :query")
     fun findSearchResult(query: String): RepoSearchResult?
 }
-
-

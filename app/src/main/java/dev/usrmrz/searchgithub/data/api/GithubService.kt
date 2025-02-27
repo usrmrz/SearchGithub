@@ -3,8 +3,6 @@ package dev.usrmrz.searchgithub.data.api
 import dev.usrmrz.searchgithub.domain.model.Contributor
 import dev.usrmrz.searchgithub.domain.model.Repo
 import dev.usrmrz.searchgithub.domain.model.User
-import kotlinx.coroutines.flow.Flow
-import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
