@@ -1,4 +1,4 @@
-package dev.usrmrz.searchgithub.ui.theme
+package dev.usrmrz.searchgithub.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

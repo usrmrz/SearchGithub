@@ -7,7 +7,11 @@
     <string name="search_hint">search repositories</string>
     <string name="error_message">Unknown Error</string>
     <string name="repo_full_name"><b>%s</b>/%s</string>
-    <string name="empty_search_result">No results for <b>%s</b></string>
+    <string name="empty_search_result">Enter query to search repositories on github.com</string>
     <string name="a11y_contributor_avatar">contributor avatar</string>
     <string name="no_description">No description</string>
+    <string name="watchers">Watchers</string>
+    <string name="issues">Issues</string>
+    <string name="stars">Stars</string>
+    <string name="forks">Forks</string>
 </resources>

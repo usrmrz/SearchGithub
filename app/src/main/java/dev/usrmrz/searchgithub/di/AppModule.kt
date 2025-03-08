@@ -24,7 +24,9 @@ object AppModule {
             app,
             GithubDb::class.java,
             GithubDb.DATABASE_NAME
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Singleton

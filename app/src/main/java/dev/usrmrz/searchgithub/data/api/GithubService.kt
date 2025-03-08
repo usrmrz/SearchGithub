@@ -1,8 +1,9 @@
 package dev.usrmrz.searchgithub.data.api
 
-import dev.usrmrz.searchgithub.domain.model.Contributor
-import dev.usrmrz.searchgithub.domain.model.Repo
-import dev.usrmrz.searchgithub.domain.model.User
+import dev.usrmrz.searchgithub.data.db.entity.ContributorEntity
+import dev.usrmrz.searchgithub.data.db.entity.RepoEntity
+import dev.usrmrz.searchgithub.data.db.entity.UserEntity
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -13,24 +14,24 @@ interface GithubService {
     @GET("users/{login}")
     suspend fun getUser(
         @Path("login") login: String
-    ): User
+    ): UserEntity
 
     @GET("users/{login}/repos")
     suspend fun getRepos(
         @Path("login") login: String
-    ): List<Repo>
+    ): List<RepoEntity>
 
     @GET("repos/{owner}/{name}")
     suspend fun getRepo(
         @Path("owner") owner: String,
         @Path("name") name: String
-    ): Repo
+    ): RepoEntity
 
     @GET("repos/{owner}/{name}/contributors")
     suspend fun getContributors(
         @Path("owner") owner: String,
         @Path("name") name: String
-    ): List<Contributor>
+    ): List<ContributorEntity>
 
     @GET("search/repositories")
     suspend fun searchRepos(
@@ -38,7 +39,7 @@ interface GithubService {
     ): RepoSearchResponse
 
     @GET("search/repositories")
-    fun searchRepos(
+    suspend fun searchRepos(
         @Query("q") query: String,
         @Query("page") page: Int
     ): RepoSearchResponse

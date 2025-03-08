@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dev.usrmrz.searchgithub.presentation.navigation.GithubNavigation
-import dev.usrmrz.searchgithub.ui.theme.SearchGithubTheme
+import dev.usrmrz.searchgithub.presentation.navigation.NavigationGraph
+import dev.usrmrz.searchgithub.presentation.ui.theme.SearchGithubTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                         .padding(top = 16.dp),
                 ) {
                     val navController = rememberNavController()
-                    GithubNavigation(navController = navController)
+                    NavigationGraph(navController = navController)
                 }
             }
         }

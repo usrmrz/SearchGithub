@@ -44,14 +44,14 @@ class SearchViewModel @Inject constructor(
         .flatMapLatest { search ->
             if(search.isBlank()) {
                 Log.d(
-                    "SrchVM_isB",
-                    "results: $results; results.v: ${results.value} search: $search"
+                    "SVM",
+                    ".flatMapLatest { search -> if(search.isBlank()) { flowOf(Resource.Success(emptyList()));;results: $results; results.v: ${results.value} search: $search"
                 )
                 flowOf(Resource.Success(emptyList()))
             } else {
                 Log.d(
-                    "SrchVM_el_isB",
-                    "results: $results; results.v: ${results.value} search: $search"
+                    "SVM",
+                    ".flatMapLatest { search -> else(!search.isBlank()) { repoRepository.search(search);;results: $results; results.v: ${results.value} search: $search"
                 )
                 repoRepository.search(search)
             }
@@ -61,17 +61,15 @@ class SearchViewModel @Inject constructor(
 
     fun setQuery(originalInput: String) {
         val input = originalInput.lowercase(Locale.getDefault()).trim()
-
         Log.d(
-            "SrchVM_sQ",
-            "originalInput: $originalInput; input: $input"
+            "SVM",
+            "fun setQuery(originalInput: String) { val input = originalInput.lowercase(Locale.getDefault()).trim();;originalInput: $originalInput; input: $input"
         )
-
         if(input == _query.value) return
         nextPageHandler.reset()
         Log.d(
-            "SrchVM_nPH",
-            "input: $input _query.v: ${_query.value}"
+            "SVM",
+            "if(input == _query.value) return::nextPageHandler.reset();;input: $input _query.v: ${_query.value}"
         )
         _query.value = input
     }
@@ -79,8 +77,8 @@ class SearchViewModel @Inject constructor(
     fun loadNextPage() {
         val currentQuery = _query.value
         Log.d(
-            "SrchVM_lNP",
-            "currentQuery: $currentQuery"
+            "SVM",
+            "fun loadNextPage() { val currentQuery = _query.value;;currentQuery: $currentQuery"
         )
         if(currentQuery.isNotBlank()) {
             nextPageHandler.queryNextPage(currentQuery)
@@ -94,8 +92,9 @@ class SearchViewModel @Inject constructor(
     }
 
     class LoadMoreState(val isRunning: Boolean, val errorMessage: String?) {
-        private var handledError = false
+//        val errorMessageIfNotHandled = MutableStateFlow(errorMessage)
 
+        private var handledError = false
         val errorMessageIfNotHandled: String?
             get() = if(handledError) null else {
                 handledError = true
@@ -112,46 +111,50 @@ class SearchViewModel @Inject constructor(
 
         private var query: String? = null
         private var _hasMore: Boolean = false
-        val hasMore: Boolean get() = _hasMore
+//        val hasMore: Boolean get() = _hasMore
 
         private var currentJob: Job? = null
 
         fun queryNextPage(query: String) {
             Log.d(
-                "SrchVM_qNP",
-                "this.query: ${this.query}; query: $query"
+                "SVM",
+                "fun queryNextPage(query: String) {;;this.query: ${this.query}; query: $query"
             )
             if(this.query == query) return
             reset()
             this.query = query
 
             _loadMoreState.value = LoadMoreState(true, null)
-
-            currentJob = this.coroutineScope.launch {
-
-                Log.d(
-                    "SrchVM_crJ",
-                    "currentJob: $currentJob"
-                )
-
+            Log.d("SVM", "_loadMoreState.value = LoadMoreState(true, null);;query: $query; this.query: ${this.query}")
+//            currentJob = this.coroutineScope.launch {
+            currentJob = coroutineScope.launch {
+                Log.d("SVM", "currentJob = coroutineScope.launch {;;currentJob: $currentJob")
                 repository.searchNextPage(query)
                     .catch { error ->
                         _loadMoreState.value = LoadMoreState(false, error.message)
-                        _hasMore = true
+                        _hasMore = false
                     }
                     .collectLatest { result ->
                         Log.d(
-                            "SrchVM_cL",
-                            "result: $result; result.st: ${result?.status}"
+                            "SVM",
+                            ".collectLatest { result ->;;result: $result; result.st: ${result?.status}"
                         )
-                        if (result == null) {
+                        if(result == null) {
+                            Log.d(
+                                "SVM",
+                                "result == null;;result: $result"
+                            )
                             reset()
+                            Log.d(
+                                "SVM",
+                                "result == null reset();;result: $result"
+                            )
                         } else {
                             when(result.status) {
                                 Status.SUCCESS -> {
                                     Log.d(
-                                        "SrchVM_cLS",
-                                        "result: $result; result.dt: ${result.data}"
+                                        "SVM",
+                                        "when(result.status) { Status.SUCCESS -> {;;result: $result; result.dt: ${result.data}"
                                     )
                                     _hasMore = result.data == true
                                     _loadMoreState.value = LoadMoreState(false, null)
@@ -159,18 +162,20 @@ class SearchViewModel @Inject constructor(
 
                                 Status.ERROR -> {
                                     Log.d(
-                                        "SrchVM_cLE",
-                                        "result: $result; result.dt: ${result.data}"
+                                        "SVM",
+                                        "Status.ERROR -> {;;result: $result; result.dt: ${result.data}"
                                     )
-                                    _hasMore = true
+                                    _hasMore = false
                                     _loadMoreState.value = LoadMoreState(false, result.message)
                                 }
 
                                 Status.LOADING -> {
+                                    _hasMore = false
+                                    _loadMoreState.value = LoadMoreState(true, result.message)
                                     //Nothing
                                     Log.d(
-                                        "SrchVM_cLL",
-                                        "result: $result; result.dt: ${result.data}"
+                                        "SVM",
+                                        "Status.LOADING -> {;;result: $result; result.dt: ${result.data}"
                                     )
                                 }
                             }
@@ -181,15 +186,15 @@ class SearchViewModel @Inject constructor(
 
         fun reset() {
             Log.d(
-                "SrchVM_rst",
-                "reset"
+                "SVM",
+                "begin fun reset()"
             )
             currentJob?.cancel()
             _hasMore = true
             _loadMoreState.value = LoadMoreState(false, null)
             Log.d(
-                "SrchVM_rst_lMS",
-                "_loadMoreState.value ${_loadMoreState.value}"
+                "SVM",
+                "fun reset();;_loadMoreState.value: ${_loadMoreState.value}"
             )
         }
     }

@@ -8,7 +8,7 @@ package dev.usrmrz.searchgithub.domain.model
 //version with sealed class
 sealed class Resource<T>(
     val status: Status,
-    val data: T? = null,
+    val data: T?,
     val message: String? = null
 ) {
     class Success<T>(

@@ -2,20 +2,23 @@ package dev.usrmrz.searchgithub.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import dev.usrmrz.searchgithub.domain.model.Contributor
-import dev.usrmrz.searchgithub.domain.model.Repo
-import dev.usrmrz.searchgithub.domain.model.RepoSearchResult
-import dev.usrmrz.searchgithub.domain.model.User
+import androidx.room.TypeConverters
+import dev.usrmrz.searchgithub.data.db.entity.ContributorEntity
+import dev.usrmrz.searchgithub.data.db.entity.RepoEntity
+import dev.usrmrz.searchgithub.data.db.entity.RepoSearchEntity
+import dev.usrmrz.searchgithub.data.db.entity.UserEntity
 
 @Database(
     entities = [
-        User::class,
-        Repo::class,
-        Contributor::class,
-        RepoSearchResult::class],
-    version = 2,
+        UserEntity::class,
+        RepoEntity::class,
+        ContributorEntity::class,
+        RepoSearchEntity::class
+    ],
+    version = 3,
     exportSchema = false,
 )
+@TypeConverters(value = [GithubTypeConverters::class])
 abstract class GithubDb : RoomDatabase() {
     abstract fun repoDao(): RepoDao
     abstract fun userDao(): UserDao

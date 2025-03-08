@@ -11,7 +11,7 @@ import dev.usrmrz.searchgithub.presentation.search.SearchScreen
 import dev.usrmrz.searchgithub.presentation.user.UserScreen
 
 @Composable
-fun GithubNavigation(navController: NavHostController) {
+fun NavigationGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "search") {
 
         composable("search") {

@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.SearchGithub" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.SearchGithub" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="actionBarStyle">@style/GithubActionBar</item>
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+
+    <style name="GithubActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="background">@color/action_bar_background</item>
+        <item name="titleTextStyle">@style/GithubActionBarTitleText</item>
+    </style>
+
+    <style name="GithubActionBarTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textColor">@color/action_bar_title_color</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
 </resources>
