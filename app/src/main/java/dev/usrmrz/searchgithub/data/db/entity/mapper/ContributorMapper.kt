@@ -5,21 +5,18 @@ import dev.usrmrz.searchgithub.domain.model.Contributor
 
 fun ContributorEntity.toDomain(): Contributor {
     return Contributor(
-        login,
-        contributions,
-        avatarUrl,
-        repoName,
-        repoOwner
+        login = login,
+        contributions = contributions,
+        avatarUrl = avatarUrl,
     )
 }
 
-fun Contributor.toEntity(): ContributorEntity {
+fun Contributor.toEntity(repoName: String, repoOwner: String): ContributorEntity {
     return ContributorEntity(
-        login,
-        contributions,
-        avatarUrl
-    ).apply {
-        repoName = this@toEntity.repoName
-        repoOwner = this@toEntity.repoOwner
-    }
+        login = login,
+        contributions = contributions,
+        avatarUrl = avatarUrl,
+        repoName = repoName,
+        repoOwner = repoOwner
+    )
 }

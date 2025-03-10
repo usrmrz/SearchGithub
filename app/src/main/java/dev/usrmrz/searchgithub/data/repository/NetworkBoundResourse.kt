@@ -1,8 +1,6 @@
 package dev.usrmrz.searchgithub.data.repository
 
-import android.util.Log
-import dev.usrmrz.searchgithub.data.api.ApiResponse
-import dev.usrmrz.searchgithub.data.api.ApiResponse.ApiSuccessResponse
+import dev.usrmrz.searchgithub.data.api.ApiResponse.*
 import dev.usrmrz.searchgithub.data.api.safeApiCall
 import dev.usrmrz.searchgithub.domain.model.Resource
 import kotlinx.coroutines.flow.Flow
@@ -10,50 +8,35 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import retrofit2.Response
 
 abstract class NetworkBoundResource<ResultType, RequestType> {
 
-//    fun asFlow(): Flow<Resource<ResultType>> = flow {
-    fun asFlow() = flow {
-//        emit(Resource.Loading())
+    fun asFlow(): Flow<Resource<ResultType>> = flow<Resource<ResultType>> {
+        emit(Resource.Loading())
         val dbValue = loadFromDb().first()
-        Log.d("NBR", "val dbValue = loadFromDb().first();;dbValue: $dbValue")
         if(shouldFetch(dbValue)) {
             emit(Resource.Loading(dbValue))
-            Log.d("NBR", "if(shouldFetch(dbValue)) { emit(Resource.Loading(dbValue));;dbValue: $dbValue")
             when(val apiResponse = safeApiCall { createCall() }) {
                 is ApiSuccessResponse -> {
-                    Log.d("NBR", "when(val apiResponse = safeApiCall { createCall() }) { is ApiResponse.Success -> {;;apiResponse: $apiResponse")
-                    saveCallResult(apiResponse.data)
-                    Log.d("NBR", "saveCallResult(apiResponse.data);;apiResponse: $apiResponse; apiResponse.d: ${apiResponse.body}")
-                    val emittedFetchedDb = loadFromDb().map { Success(it) }
-                    emitAll(emittedFetchedDb)
-                    Log.d("NBR", "val emitted = loadFromDb().map { Resource.Success(it) } emitAll(emitted);;it: $emittedFetchedDb")
+                    saveCallResult(apiResponse.body)
+                    val emitted = loadFromDb().map { Resource.Success(it) }
+                    emitAll(emitted)
                 }
 
-                is ApiResponse.Empty -> {
-                    val emittedEmpty = loadFromDb().map { Success(it) }
-                    emitAll(emittedEmpty)
-                    Log.d("NBR", "is ApiResponse.Empty -> { val eEmp = loadFromDb().map { Resource.Success(it) } emitAll(eEmp);;it: $emittedEmpty")
+                is ApiEmptyResponse -> {
+                    val emitted = loadFromDb().map { Resource.Success(it) }
+                    emitAll(emitted)
                 }
 
-                is ApiResponse.Error -> {
-                    Log.d("NBR", "is ApiResponse.Error -> {")
+                is ApiErrorResponse -> {
                     onFetchFailed()
-                    Log.d("NBR", "is ApiResponse.Error -> { onFetchFailed();;onFF: ${onFetchFailed()}")
-                    val emittedError = loadFromDb().map { Error(apiResponse.errorMessage, it) }
-                    emitAll(emittedError)
-                    Log.d("NBR", "val eErr = loadFromDb().map { Resource.Error(apiResponse.errorMessage, it) } emitAll(eErr);;it: $emittedError")
+                    val emitted = loadFromDb().map { Resource.Error(apiResponse.errorMessage, it) }
+                    emitAll(emitted)
                 }
-
-                ApiResponse.ApiEmptyResponse -> TODO()
-                is ApiResponse.ApiErrorResponse -> TODO()
             }
         } else {
-            val emittedShouldntFetch = loadFromDb().map { Resource.Success(it) }
-            emitAll(emittedShouldntFetch)
-            Log.d("NBR", "val eNF = loadFromDb().map { Resource.Success(it) } emitAll(eNF);;it: $emittedShouldntFetch")
+            val emitted = loadFromDb().map { Resource.Success(it) }
+            emitAll(emitted)
         }
     }
 

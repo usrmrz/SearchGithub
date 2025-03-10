@@ -5,18 +5,18 @@ import dev.usrmrz.searchgithub.domain.model.RepoSearchResult
 
 fun RepoSearchEntity.toDomain(): RepoSearchResult {
     return RepoSearchResult(
-        query,
-        repoIds,
-        totalCount,
-        next
+        query = query,
+        repoIds = repoIds,
+        totalCount = totalCount,
+        next = next,
     )
 }
 
 fun RepoSearchResult.toEntity(): RepoSearchEntity {
     return RepoSearchEntity(
-        query,
-        repoIds,
-        totalCount,
-        next
+        query = query,
+        repoIds = repoIds,
+        totalCount = totalCount,
+        next = next,
     )
 }

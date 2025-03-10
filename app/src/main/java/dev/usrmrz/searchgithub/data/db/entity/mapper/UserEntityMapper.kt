@@ -5,24 +5,24 @@ import dev.usrmrz.searchgithub.domain.model.User
 
 fun UserEntity.toDomain(): User {
     return User(
-        login,
-        avatarUrl,
-        url,
-        name,
-        company,
-        reposUrl,
-        blog
+        login = login,
+        avatarUrl = avatarUrl,
+        url = url,
+        name = name,
+        company = company,
+        reposUrl = reposUrl,
+        blog = blog,
     )
 }
 
 fun User.toEntity(): UserEntity {
     return UserEntity(
-        login,
-        avatarUrl,
-        url,
-        name,
-        company,
-        reposUrl,
-        blog
+        login = login,
+        avatarUrl = avatarUrl,
+        url = url,
+        name = name,
+        company = company,
+        reposUrl = reposUrl,
+        blog = blog,
     )
 }

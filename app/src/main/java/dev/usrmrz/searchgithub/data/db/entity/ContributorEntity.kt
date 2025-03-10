@@ -21,8 +21,12 @@ data class ContributorEntity(
     @field:SerializedName("contributions")
     val contributions: Int,
     @field:SerializedName("avatar_url")
-    val avatarUrl: String?
-) {
-    lateinit var repoName: String
-    lateinit var repoOwner: String
-}
+    val avatarUrl: String?,
+    @field:SerializedName("repo_name")
+    val repoName: String,
+    @field:SerializedName("repo_owner")
+    val repoOwner: String,
+) //{
+//    lateinit var repoName: String
+//    lateinit var repoOwner: String
+//}

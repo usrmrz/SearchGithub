@@ -7,7 +7,7 @@ import dev.usrmrz.searchgithub.data.api.toSuccess
 import dev.usrmrz.searchgithub.data.db.entity.mapper.toDomain
 import dev.usrmrz.searchgithub.domain.model.Repo
 
-class SearchPagingSource(
+abstract class SearchPagingSource(
     private val api: GithubService,
     private val query: String
 ) : PagingSource<Int, Repo>() {
@@ -16,7 +16,7 @@ class SearchPagingSource(
         return try {
             val response = api.searchRepos(query, page)
             LoadResult.Page(
-                data = response.body.items,
+                data = response.items,
                 prevKey = if(page > 1) page - 1 else null,
                 nextKey = response.nextPage
             )

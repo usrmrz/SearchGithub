@@ -4,7 +4,7 @@ data class Repo(
     val id: Int,
     val name: String,
     val fullName: String,
-    val owner: User,
+    val owner: Owner,
     val description: String?,
     val watchers: Int,
     val issues: Int,
@@ -13,7 +13,7 @@ data class Repo(
 ) {
     data class Owner(
         val login: String,
-        val url: String?
+        val avatarUrl: String?
     )
     companion object {
         const val UNKNOWN_ID = -1

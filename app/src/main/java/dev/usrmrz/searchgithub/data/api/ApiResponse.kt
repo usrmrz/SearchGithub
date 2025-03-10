@@ -9,7 +9,7 @@ import retrofit2.Response
 //@Suppress("unused")
 // T is used in extending classes
 sealed class ApiResponse<out T> {
-    data class ApiSuccessResponse<T>(val body: T, val nextPage: Int?) : ApiResponse<T>()
+    data class ApiSuccessResponse<T>(val body: T, var nextPage: Int? = null) : ApiResponse<T>()
     data class ApiErrorResponse(val errorMessage: String) : ApiResponse<Nothing>()
     object ApiEmptyResponse : ApiResponse<Nothing>()
 }
@@ -38,7 +38,7 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> T): ApiResponse<T> {
     return try {
         val response = apiCall()
         if(response != null) {
-            ApiSuccessResponse(body = response, nextPage = null)
+            ApiSuccessResponse(response)
         } else {
             ApiEmptyResponse
         }
