@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.ForkLeft
 import androidx.compose.material.icons.filled.Group
@@ -37,7 +38,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -59,7 +59,6 @@ import dev.usrmrz.searchgithub.domain.model.Repo
 import dev.usrmrz.searchgithub.domain.model.Status
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -223,9 +222,42 @@ fun RepoItem(repo: Repo, onClick: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(16.dp))
+            Row(modifier = Modifier.fillMaxWidth()) { DateSection(repo) }
+
+            Spacer(modifier = Modifier.height(16.dp))
             Row(modifier = Modifier.fillMaxWidth()) { StatsSection(repo) }
 
         }
+    }
+}
+
+@Composable
+fun DateSection(repo: Repo) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        DateItem(
+            icon = Icons.Filled.AccessTime,
+            label = stringResource(R.string.created_at),
+            value = repo.createdAt.toString()
+        )
+        DateItem(
+            icon = Icons.Filled.AccessTime,
+            label = stringResource(R.string.update_at),
+            value = "${repo.updatedAt}"
+        )
+    }
+}
+
+@Composable
+fun DateItem(icon: ImageVector, label: String, value: String) {
+    Column(horizontalAlignment = Alignment.Start) {
+        Row(verticalAlignment = Alignment.Top) {
+            Icon(imageVector = icon, contentDescription = label)
+            Text(text = value, style = MaterialTheme.typography.bodyMedium)
+        }
+        Text(text = label, style = MaterialTheme.typography.labelSmall)
     }
 }
 
@@ -287,10 +319,26 @@ fun StatsSection(repo: Repo) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        StatItem(icon = Icons.Filled.Group, label = stringResource(R.string.watchers), value = repo.watchers.toString())
-        StatItem(icon = Icons.Filled.Error, label = stringResource(R.string.issues), value = "${repo.issues}")
-        StatItem(icon = Icons.Filled.Star, label = stringResource(R.string.stars), value = repo.stars.toString())
-        StatItem(icon = Icons.Filled.ForkLeft, label = stringResource(R.string.forks), value = repo.forks.toString())
+        StatItem(
+            icon = Icons.Filled.Group,
+            label = stringResource(R.string.watchers),
+            value = repo.watchers.toString()
+        )
+        StatItem(
+            icon = Icons.Filled.Error,
+            label = stringResource(R.string.issues),
+            value = "${repo.issues}"
+        )
+        StatItem(
+            icon = Icons.Filled.Star,
+            label = stringResource(R.string.stars),
+            value = repo.stars.toString()
+        )
+        StatItem(
+            icon = Icons.Filled.ForkLeft,
+            label = stringResource(R.string.forks),
+            value = repo.forks.toString()
+        )
     }
 }
 

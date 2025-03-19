@@ -2,9 +2,6 @@ package dev.usrmrz.searchgithub.data.repository
 
 import androidx.paging.PagingSource
 import dev.usrmrz.searchgithub.data.api.GithubService
-import dev.usrmrz.searchgithub.data.api.toApiResponse
-import dev.usrmrz.searchgithub.data.api.toSuccess
-import dev.usrmrz.searchgithub.data.db.entity.mapper.toDomain
 import dev.usrmrz.searchgithub.domain.model.Repo
 
 abstract class SearchPagingSource(

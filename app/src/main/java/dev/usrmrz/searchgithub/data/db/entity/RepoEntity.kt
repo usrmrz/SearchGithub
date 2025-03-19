@@ -23,6 +23,10 @@ data class RepoEntity(
     val owner: OwnerEntity,
     @field:SerializedName("description")
     val description: String?,
+    @field:SerializedName("created_at")
+    val createdAt: String,
+    @field:SerializedName("updated_at")
+    val updatedAt: String?,
     @field:SerializedName("watchers_count")
     val watchers: Int,
     @field:SerializedName("open_issues_count")

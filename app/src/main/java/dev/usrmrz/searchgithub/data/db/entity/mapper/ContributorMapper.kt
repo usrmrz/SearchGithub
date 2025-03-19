@@ -8,6 +8,8 @@ fun ContributorEntity.toDomain(): Contributor {
         login = login,
         contributions = contributions,
         avatarUrl = avatarUrl,
+        repoName = repoName,
+        repoOwner = repoOwner
     )
 }
 

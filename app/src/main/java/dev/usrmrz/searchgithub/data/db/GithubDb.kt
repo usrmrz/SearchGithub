@@ -15,7 +15,7 @@ import dev.usrmrz.searchgithub.data.db.entity.UserEntity
         ContributorEntity::class,
         RepoSearchEntity::class
     ],
-    version = 5,
+    version = 1,
     exportSchema = false,
 )
 @TypeConverters(value = [GithubTypeConverters::class])

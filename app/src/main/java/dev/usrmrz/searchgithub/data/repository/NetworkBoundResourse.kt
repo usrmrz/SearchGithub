@@ -1,6 +1,8 @@
 package dev.usrmrz.searchgithub.data.repository
 
-import dev.usrmrz.searchgithub.data.api.ApiResponse.*
+import dev.usrmrz.searchgithub.data.api.ApiEmptyResponse
+import dev.usrmrz.searchgithub.data.api.ApiErrorResponse
+import dev.usrmrz.searchgithub.data.api.ApiSuccessResponse
 import dev.usrmrz.searchgithub.data.api.safeApiCall
 import dev.usrmrz.searchgithub.domain.model.Resource
 import kotlinx.coroutines.flow.Flow
@@ -10,7 +12,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 abstract class NetworkBoundResource<ResultType, RequestType> {
-
     fun asFlow(): Flow<Resource<ResultType>> = flow<Resource<ResultType>> {
         emit(Resource.Loading())
         val dbValue = loadFromDb().first()
@@ -18,16 +19,15 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
             emit(Resource.Loading(dbValue))
             when(val apiResponse = safeApiCall { createCall() }) {
                 is ApiSuccessResponse -> {
-                    saveCallResult(apiResponse.body)
+//                    saveCallResult(apiResponse.body)
+                    saveCallResult(processResponse(apiResponse))
                     val emitted = loadFromDb().map { Resource.Success(it) }
                     emitAll(emitted)
                 }
-
                 is ApiEmptyResponse -> {
                     val emitted = loadFromDb().map { Resource.Success(it) }
                     emitAll(emitted)
                 }
-
                 is ApiErrorResponse -> {
                     onFetchFailed()
                     val emitted = loadFromDb().map { Resource.Error(apiResponse.errorMessage, it) }
@@ -39,13 +39,14 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
             emitAll(emitted)
         }
     }
-
     protected open fun onFetchFailed() {}
+    protected open fun processResponse(response: ApiSuccessResponse<RequestType>) = response.body
     protected abstract suspend fun saveCallResult(item: RequestType)
     protected abstract fun shouldFetch(data: ResultType?): Boolean
     protected abstract suspend fun createCall(): RequestType
     protected abstract fun loadFromDb(): Flow<ResultType>
 }
+
 
 //abstract class NetworkBoundResource<ResultType, RequestType> {
 //    private var result: Flow<Resource<ResultType>> = flow {

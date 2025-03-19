@@ -1,51 +1,123 @@
 package dev.usrmrz.searchgithub.data.api
 
-import android.util.Log.e
-import dev.usrmrz.searchgithub.data.api.ApiResponse.ApiEmptyResponse
-import dev.usrmrz.searchgithub.data.api.ApiResponse.ApiErrorResponse
-import dev.usrmrz.searchgithub.data.api.ApiResponse.ApiSuccessResponse
+import android.util.Log
 import retrofit2.Response
+import java.util.regex.Pattern
 
 //@Suppress("unused")
 // T is used in extending classes
 sealed class ApiResponse<out T> {
-    data class ApiSuccessResponse<T>(val body: T, var nextPage: Int? = null) : ApiResponse<T>()
-    data class ApiErrorResponse(val errorMessage: String) : ApiResponse<Nothing>()
-    object ApiEmptyResponse : ApiResponse<Nothing>()
+    companion object {
+        fun <T> create(error: Throwable): ApiResponse<T> {
+            return ApiErrorResponse(error.message ?: "unknown error")
+        }
+
+
+        fun <T> create(response: Response<T>): ApiResponse<T> {
+            return if(response.isSuccessful) {
+                val body = response.body()
+                val linkHeader = response.headers()["link"]
+                Log.d("ApiR", "fun <T> create(response: Response<T>): ApiResponse<T>;;linkHeader: $linkHeader")
+                Log.d("ApiR", "fun <T> create(response;;body: $body, response: $response")
+                if(body == null || response.code() == 204) {
+                    Log.d("ApiR", "fun <T> create(response; body == null || response.code() == 204;;body: $body, response.cd: ${response.code()}")
+                    ApiEmptyResponse()
+                } else {
+                    ApiSuccessResponse(
+                        body = body,
+                        linkHeader = response.headers()["link"],
+                    )
+
+                }
+            } else {
+                val msg = response.errorBody()?.string()
+                val errorMsg = if(msg.isNullOrEmpty()) {
+                    response.message()
+                    Log.d(
+                        "ApiR",
+                        "val errorMsg = if(msg.isNullOrEmpty()) { response.message();;response: $response, response.mes: ${response.message()}"
+                    )
+                } else {
+                    Log.d("ApiR", "if(msg.isNullOrEmpty()) else;;msg: $msg")
+                    msg
+                }
+                ApiErrorResponse(errorMsg.toString())
+            }
+            Log.d("ApiR", "End response: $response")
+        }
+    }
+}
+/**
+ * separate class for HTTP 204 responses so that we can make ApiSuccessResponse's body non-null.
+ */
+
+
+class ApiEmptyResponse<T> : ApiResponse<T>()
+
+
+data class ApiSuccessResponse<T>(
+    val body: T,
+    val links: Map<String, String>
+) : ApiResponse<T>() {
+    constructor(body: T, linkHeader: String?) : this(
+        body = body,
+        links = linkHeader?.extractLinks() ?: emptyMap()
+    )
+    companion object {
+        private val LINK_PATTERN = Pattern.compile("<([^>]*)>;\\s*rel=\"([a-zA-Z0-9]+)\"")
+        private val PAGE_PATTERN = Pattern.compile("\\bpage=(\\d+)")
+        private const val NEXT_LINK = "next"
+
+        private fun String.extractLinks(): Map<String, String> {
+            val links = mutableMapOf<String, String>()
+            val matcher = LINK_PATTERN.matcher(this)
+            Log.d("ApiR", "links: $links, matcher: $matcher")
+            while(matcher.find()) {
+                val count = matcher.groupCount()
+                if(count == 2) {
+                    links[matcher.group(2)!!] = matcher.group(1)!!
+                }
+            }
+            Log.d("ApiR", "links: $links, count: ${count()}")
+            return links
+        }
+    }
+
+    val nextPage: Int? by lazy(LazyThreadSafetyMode.NONE) {
+        links[NEXT_LINK]?.let { next ->
+            val matcher = PAGE_PATTERN.matcher(next)
+            Log.d("ApiR", "links: $links")
+            if(!matcher.find() || matcher.groupCount() != 1) {
+                null
+            } else {
+                try {
+                    Integer.parseInt(matcher.group(1)!!)
+                } catch(ex: NumberFormatException) {
+                    Log.d("cannot parse next page from %s because $ex", next)
+                    null
+                }
+            }
+        }
+    }
 }
 
-fun <T> Response<T>.toApiResponse(): ApiResponse<T> {
-    val linkHeader = headers()["link"]
-    val nextPage = parseNextPage(linkHeader)
-    return ApiSuccessResponse(body()!!, nextPage)
-}
+data class ApiErrorResponse<T>(val errorMessage: String) : ApiResponse<T>()
 
-fun <T> Response<T>.toSuccess(): ApiResponse<T> {
-    return body()?.let {
-        val linkHeader = headers()["link"]
-        val nextPage = parseNextPage(linkHeader)
-        ApiSuccessResponse(it, nextPage)
-    } ?: ApiEmptyResponse
-}
-
-private fun parseNextPage(linkHeader: String?): Int? {
-    linkHeader ?: return null
-    val nextPageRegex = """<[^>]*[?&]page=(\d+)[^>]*>; rel="next"""".toRegex()
-    return nextPageRegex.find(linkHeader)?.groupValues?.get(1)?.toIntOrNull()
-}
 
 suspend fun <T> safeApiCall(apiCall: suspend () -> T): ApiResponse<T> {
     return try {
         val response = apiCall()
         if(response != null) {
-            ApiSuccessResponse(response)
+            Log.d("AR", "if(response != null) {;;response.b: $response.;response: $response")
+            ApiSuccessResponse(response, null)
         } else {
-            ApiEmptyResponse
+            ApiEmptyResponse()
         }
     } catch(e: Exception) {
         ApiErrorResponse(e.message ?: "An unknown error occurred")
     }
 }
+
 
 //    data class Success<T>(
 //        val body: T,

@@ -10,6 +10,8 @@
     <string name="empty_search_result">Enter query to search repositories on github.com</string>
     <string name="a11y_contributor_avatar">contributor avatar</string>
     <string name="no_description">No description</string>
+    <string name="created_at">Created</string>
+    <string name="update_at">Updated</string>
     <string name="watchers">Watchers</string>
     <string name="issues">Issues</string>
     <string name="stars">Stars</string>

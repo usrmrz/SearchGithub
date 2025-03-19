@@ -11,8 +11,8 @@ import dev.usrmrz.searchgithub.domain.model.Repo
 data class RepoSearchResponse(
     @SerializedName("total_count")
     val total: Int = 0,
-    @SerializedName("items")
+//    @SerializedName("items")
     val items: List<Repo>
 ) {
-    var nextPage: Int? = null
+    var nextPage: Int? = 7
 }

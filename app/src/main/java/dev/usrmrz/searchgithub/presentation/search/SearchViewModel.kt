@@ -129,6 +129,7 @@ class SearchViewModel @Inject constructor(
 //            currentJob = this.coroutineScope.launch {
             currentJob = coroutineScope.launch {
                 Log.d("SVM", "currentJob = coroutineScope.launch {;;currentJob: $currentJob")
+                @Suppress("DEPRECATION")
                 repository.searchNextPage(query)
                     .catch { error ->
                         _loadMoreState.value = LoadMoreState(false, error.message)
