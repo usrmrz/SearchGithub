@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import retrofit2.Response
 import java.time.temporal.TemporalAdjusters.next
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -38,9 +39,7 @@ class RepoRepositoryImpl(
     private val db: GithubDb,
 ) : RepoRepository {
 
-
     private val repoListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
-
 
     override fun loadRepos(owner: String): Flow<Resource<List<Repo>>> {
         return object : NetworkBoundResource<List<Repo>, List<RepoEntity>>() {
@@ -104,7 +103,6 @@ class RepoRepositoryImpl(
             override suspend fun createCall() = api.getContributors(owner, name)
         }.asFlow()
     }
-
 
     override fun searchNextPage(query: String): StateFlow<Resource<Boolean>?> {
         val fetchNextSearchPageTask = FetchNextSearchPageTask(

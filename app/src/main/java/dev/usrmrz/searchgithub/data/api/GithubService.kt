@@ -14,29 +14,29 @@ interface GithubService {
     @GET("users/{login}")
     suspend fun getUser(
         @Path("login") login: String
-    ): UserEntity
+    ): Response<UserEntity>
 
     @GET("users/{login}/repos")
     suspend fun getRepos(
         @Path("login") login: String
-    ): List<RepoEntity>
+    ): Response<List<RepoEntity>>
 
     @GET("repos/{owner}/{name}")
     suspend fun getRepo(
         @Path("owner") owner: String,
         @Path("name") name: String
-    ): RepoEntity
+    ): Response<RepoEntity>
 
     @GET("repos/{owner}/{name}/contributors")
     suspend fun getContributors(
         @Path("owner") owner: String,
         @Path("name") name: String
-    ): List<ContributorEntity>
+    ): Response<List<ContributorEntity>>
 
     @GET("search/repositories")
     suspend fun searchRepos(
         @Query("q") query: String
-    ): RepoSearchResponse
+    ): Response<RepoSearchResponse>
 
     @GET("search/repositories")
     suspend fun searchRepos(

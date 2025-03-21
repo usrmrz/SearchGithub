@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import retrofit2.Response
 
 abstract class NetworkBoundResource<ResultType, RequestType> {
     fun asFlow(): Flow<Resource<ResultType>> = flow<Resource<ResultType>> {
@@ -17,7 +18,9 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
         val dbValue = loadFromDb().first()
         if(shouldFetch(dbValue)) {
             emit(Resource.Loading(dbValue))
-            when(val apiResponse = safeApiCall { createCall() }) {
+            val apiResponse = safeApiCall { createCall() }
+//            val apiResponse = createCall()
+            when(apiResponse) {
                 is ApiSuccessResponse -> {
 //                    saveCallResult(apiResponse.body)
                     saveCallResult(processResponse(apiResponse))
@@ -43,7 +46,7 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
     protected open fun processResponse(response: ApiSuccessResponse<RequestType>) = response.body
     protected abstract suspend fun saveCallResult(item: RequestType)
     protected abstract fun shouldFetch(data: ResultType?): Boolean
-    protected abstract suspend fun createCall(): RequestType
+    protected abstract suspend fun createCall(): Response<RequestType>
     protected abstract fun loadFromDb(): Flow<ResultType>
 }
 

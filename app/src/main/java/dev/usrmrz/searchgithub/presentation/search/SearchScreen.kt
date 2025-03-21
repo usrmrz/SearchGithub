@@ -84,14 +84,15 @@ fun SearchScreen(
     )
 
     LaunchedEffect(listState) {
-        Log.d("SScr", "LaunchedEffect(key1: listState);;listState: $listState")
 //        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
-        snapshotFlow { listState.firstVisibleItemIndex to listState.layoutInfo.totalItemsCount }
 //            .map { visibleItems -> visibleItems.lastOrNull()?.index }
-            .distinctUntilChanged()
 //            .collectLatest { lastVisibleItem ->
-            .collectLatest { (firstIndex, totalItems) ->
 //                if(lastVisibleItem != null && lastVisibleItem >= results.data!!.size - 1) {
+
+        Log.d("SScr", "LaunchedEffect(key1: listState);;listState: $listState")
+        snapshotFlow { listState.firstVisibleItemIndex to listState.layoutInfo.totalItemsCount }
+            .distinctUntilChanged()
+            .collectLatest { (firstIndex, totalItems) ->
                 if(totalItems > 0 && firstIndex + listState.layoutInfo.visibleItemsInfo.size >= totalItems - 1) {
                     Log.d(
                         "SScr",
@@ -107,6 +108,7 @@ fun SearchScreen(
             .padding(8.dp)
     ) {
         TopAppBar(
+            expandedHeight = 20.dp,
             title = { Text("GitHub Repositories", style = MaterialTheme.typography.titleLarge) },
         )
         val focusRequester = remember { FocusRequester() }

@@ -4,8 +4,46 @@ package dev.usrmrz.searchgithub.util
 //import com.google.gson.JsonDeserializationContext
 //import com.google.gson.JsonDeserializer
 //import com.google.gson.JsonElement
+//import dev.usrmrz.searchgithub.data.api.ApiEmptyResponse
+//import dev.usrmrz.searchgithub.data.api.ApiErrorResponse
 //import dev.usrmrz.searchgithub.data.api.ApiResponse
+//import dev.usrmrz.searchgithub.data.api.ApiSuccessResponse
 //import java.lang.reflect.Type
+
+//class ApiResponseAdapter<T>(private val type: Type) : JsonDeserializer<ApiResponse<T>> {
+
+//    override fun deserialize(
+//        json: JsonElement,
+//        typeOfT: Type,
+//        context: JsonDeserializationContext,
+//    ): ApiResponse<T> {
+//        if(json.isJsonNull || (json.isJsonObject && json.asJsonObject.entrySet().isEmpty())) {
+//            Log.d(
+//                "ApiRsAdp",
+//                "Received empty JSON -> returning ApiEmptyResponse - json: $json"
+//            )
+//            return ApiEmptyResponse()
+//        }
+//        val jsonObject = json.asJsonObject
+//        Log.d("ApiRsAdp", "obj Deserializing JSON: $jsonObject")
+//        return when {
+//            jsonObject.has("body") -> {
+//                val body = context.deserialize<T>(jsonObject.get("body"), type)
+//                val links = jsonObject.get("link")?.asJsonObject?.entrySet()
+//                    ?.associate { it.key to it.value.asString } ?: emptyMap()
+//                Log.d("ApiRsAdp", "errorMessage: ${jsonObject.has("message")}")
+//                ApiSuccessResponse(body, links)
+//            }
+//            jsonObject.has("errorMessage") -> {
+//                ApiErrorResponse(jsonObject.get("errorMessage").asString)
+//            }
+//            else -> {
+//                ApiEmptyResponse()
+//            }
+//        }
+//    }
+//}
+
 
 //class ApiResponseAdapter<T>(private val type: Type) : JsonDeserializer<ApiResponse<T>> {
 

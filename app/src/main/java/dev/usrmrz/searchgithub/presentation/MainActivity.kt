@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 16.dp),
+                        .padding(top = 24.dp),
                 ) {
                     val navController = rememberNavController()
                     NavigationGraph(navController = navController)
