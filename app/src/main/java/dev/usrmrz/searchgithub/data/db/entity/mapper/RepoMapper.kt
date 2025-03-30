@@ -43,7 +43,7 @@ private fun formatDate(originalDateStr: String?): String? {
     // Parse the original date string to a ZonedDateTime object
     val originalDate = ZonedDateTime.parse(originalDateStr)
     // Define the desired format
-    val desiredFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+    val desiredFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
     // Convert the ZonedDateTime object to the desired format
     val formattedDateStr = originalDate.format(desiredFormat)
     return formattedDateStr

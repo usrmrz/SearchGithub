@@ -4,19 +4,17 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.usrmrz.searchgithub.domain.model.Repo
 import dev.usrmrz.searchgithub.domain.model.Resource
 import dev.usrmrz.searchgithub.domain.model.Status
 import dev.usrmrz.searchgithub.domain.repository.RepoRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -27,176 +25,140 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 
-//@Suppress("unused")
+
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val repoRepository: RepoRepository
+    private val repoRepository: RepoRepository,
 ) : ViewModel() {
-    private val _query = MutableStateFlow<String>("")
-    private val nextPageHandler = NextPageHandler(repoRepository, viewModelScope)
 
+    private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query.asStateFlow()
 
+    private val nextPageHandler = NextPageHandler(repoRepository, viewModelScope)
+
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val results: StateFlow<Resource<List<Repo>>> = _query
+    val results = _query
         .debounce(300)
         .distinctUntilChanged()
         .flatMapLatest { search ->
             if(search.isBlank()) {
-                Log.d(
-                    "SVM",
-                    ".flatMapLatest { search -> if(search.isBlank()) { flowOf(Resource.Success(emptyList()));;results: $results; results.v: ${results.value} search: $search"
-                )
-                flowOf(Resource.Success(emptyList()))
+                flowOf(Resource.Success(emptyList())) // Возвращаем пустой список
             } else {
-                Log.d(
-                    "SVM",
-                    ".flatMapLatest { search -> else(!search.isBlank()) { repoRepository.search(search);;results: $results; results.v: ${results.value} search: $search"
-                )
                 repoRepository.search(search)
             }
-        }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading(null))
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
 
     val loadMoreStatus: StateFlow<LoadMoreState> = nextPageHandler.loadMoreState
 
-    fun setQuery(originalInput: String) {
-        val input = originalInput.lowercase(Locale.getDefault()).trim()
-        Log.d(
-            "SVM",
-            "fun setQuery(originalInput: String) { val input = originalInput.lowercase(Locale.getDefault()).trim();;originalInput: $originalInput; input: $input"
-        )
-        if(input == _query.value) return
-        nextPageHandler.reset()
-        Log.d(
-            "SVM",
-            "if(input == _query.value) return::nextPageHandler.reset();;input: $input _query.v: ${_query.value}"
-        )
-        _query.value = input
+    fun setQuery(input: String) {
+        val newQuery = input.lowercase(Locale.getDefault()).trim()
+        if(newQuery != _query.value) {
+            nextPageHandler.reset()
+            _query.value = newQuery
+        }
     }
 
     fun loadNextPage() {
         val currentQuery = _query.value
         Log.d(
             "SVM",
-            "fun loadNextPage() { val currentQuery = _query.value;;currentQuery: $currentQuery"
+            "fun loadNextPage() {val currentQuery = _query.value;;currentQuery: $currentQuery; _query.value: ${_query.value};"
         )
         if(currentQuery.isNotBlank()) {
+            Log.d(
+                "SVM",
+                "if(currentQuery.isNotBlank());;currentQuery: $currentQuery; _query.value: ${_query.value};"
+            )
             nextPageHandler.queryNextPage(currentQuery)
         }
     }
 
-    fun refresh() {
-        _query.value.let {
-            _query.value = it
-        }
-    }
+//    fun refresh() {
+//        _query.value = _query.value
+//    }
 
     class LoadMoreState(val isRunning: Boolean, val errorMessage: String?) {
-//        val errorMessageIfNotHandled = MutableStateFlow(errorMessage)
-
         private var handledError = false
+
         val errorMessageIfNotHandled: String?
-            get() = if(handledError) null else {
+            get() {
+                if(handledError) {
+                    return null
+                }
                 handledError = true
-                errorMessage
+                return errorMessage
             }
     }
+//}
 
+    //    inner class NextPageHandler(
     class NextPageHandler(
         private val repository: RepoRepository,
-        private val coroutineScope: CoroutineScope,
+        private val scope: CoroutineScope
     ) {
+        private var nextPageFlow: Flow<Resource<Boolean>>? = null
         private val _loadMoreState = MutableStateFlow(LoadMoreState(false, null))
         val loadMoreState: StateFlow<LoadMoreState> = _loadMoreState.asStateFlow()
 
         private var query: String? = null
-        private var _hasMore: Boolean = false
-//        val hasMore: Boolean get() = _hasMore
+        private var _hasMore: Boolean = true
+//    val hasMore: Boolean get() = _hasMore
 
-        private var currentJob: Job? = null
 
         fun queryNextPage(query: String) {
+
+            reset()
+            if(this.query == query) {
+                Log.d(
+                    "SVM",
+                    "if(this.query == query);;query: $query;"
+                )
+                return
+            }
+            unregister()
+            this.query = query
             Log.d(
                 "SVM",
-                "fun queryNextPage(query: String) {;;this.query: ${this.query}; query: $query"
+                "this.query = query;;query: $query;"
             )
-            if(this.query == query) return
-            reset()
-            this.query = query
+            nextPageFlow = repository.searchNextPage(query)
 
-            _loadMoreState.value = LoadMoreState(true, null)
-            Log.d("SVM", "_loadMoreState.value = LoadMoreState(true, null);;query: $query; this.query: ${this.query}")
-//            currentJob = this.coroutineScope.launch {
-            currentJob = coroutineScope.launch {
-                Log.d("SVM", "currentJob = coroutineScope.launch {;;currentJob: $currentJob")
-                @Suppress("DEPRECATION")
-                repository.searchNextPage(query)
-                    .catch { error ->
-                        _loadMoreState.value = LoadMoreState(false, error.message)
-                        _hasMore = false
-                    }
-                    .collectLatest { result ->
-                        Log.d(
-                            "SVM",
-                            ".collectLatest { result ->;;result: $result; result.st: ${result?.status}"
-                        )
-                        if(result == null) {
-                            Log.d(
-                                "SVM",
-                                "result == null;;result: $result"
-                            )
-                            reset()
-                            Log.d(
-                                "SVM",
-                                "result == null reset();;result: $result"
-                            )
-                        } else {
-                            when(result.status) {
-                                Status.SUCCESS -> {
-                                    Log.d(
-                                        "SVM",
-                                        "when(result.status) { Status.SUCCESS -> {;;result: $result; result.dt: ${result.data}"
-                                    )
-                                    _hasMore = result.data == true
-                                    _loadMoreState.value = LoadMoreState(false, null)
-                                }
+            scope.launch {
+                nextPageFlow?.collectLatest { result ->
+                    when(result.status) {
+                        Status.SUCCESS -> {
+                            _hasMore = result.data == true
+                            _loadMoreState.value = LoadMoreState(false, null)
+                        }
 
-                                Status.ERROR -> {
-                                    Log.d(
-                                        "SVM",
-                                        "Status.ERROR -> {;;result: $result; result.dt: ${result.data}"
-                                    )
-                                    _hasMore = false
-                                    _loadMoreState.value = LoadMoreState(false, result.message)
-                                }
+                        Status.ERROR -> {
+                            _hasMore = true
+                            _loadMoreState.value = LoadMoreState(false, result.message)
+                        }
 
-                                Status.LOADING -> {
-                                    _hasMore = false
-                                    _loadMoreState.value = LoadMoreState(true, result.message)
-                                    //Nothing
-                                    Log.d(
-                                        "SVM",
-                                        "Status.LOADING -> {;;result: $result; result.dt: ${result.data}"
-                                    )
-                                }
-                            }
+                        Status.LOADING -> {
+                            _loadMoreState.value = LoadMoreState(true, null)
                         }
                     }
+                }
+            }
+        }
+
+        private fun unregister() {
+            nextPageFlow = null
+            if(_hasMore) {
+            query = null
             }
         }
 
         fun reset() {
-            Log.d(
-                "SVM",
-                "begin fun reset()"
-            )
-            currentJob?.cancel()
+            unregister()
             _hasMore = true
+//            query = null
             _loadMoreState.value = LoadMoreState(false, null)
-            Log.d(
-                "SVM",
-                "fun reset();;_loadMoreState.value: ${_loadMoreState.value}"
-            )
         }
     }
 }
+
+

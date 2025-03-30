@@ -42,5 +42,5 @@ interface GithubService {
     suspend fun searchRepos(
         @Query("q") query: String,
         @Query("page") page: Int
-    ): RepoSearchResponse
+    ): Response<RepoSearchResponse>
 }

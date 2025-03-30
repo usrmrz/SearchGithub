@@ -3,7 +3,6 @@ package dev.usrmrz.searchgithub.data.api
 import android.util.Log
 import retrofit2.Response
 import java.util.regex.Pattern
-import kotlin.text.count
 
 //@Suppress("unused")
 // T is used in extending classes
@@ -91,7 +90,7 @@ data class ApiSuccessResponse<T>(
                     links[matcher.group(2)!!] = matcher.group(1)!!
                 }
             }
-            Log.d("ApiR", "links: $links, count: ${count()}")
+            Log.d("ApiR", "links: $links, count: ${matcher.groupCount()}")
             return links
         }
     }
@@ -124,10 +123,11 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): ApiResponse<T> 
     return try {
         val response = apiCall()
         if(response.isSuccessful) {
-        Log.d("AR", "response.isSuccessful;;response: $response")
+            Log.d("AR", "response.isSuccessful;;response: $response")
             val body = response.body()
             val linkHeader = response.headers()["link"]
             if(body == null || response.code() == 204) {
+                Log.d("AR", "ApiEmptyResponse;;linkHeader: $linkHeader; body: $body")
                 ApiEmptyResponse()
             } else {
                 Log.d("AR", "ApiSuccessResponse;;linkHeader: $linkHeader; body: $body")
@@ -137,6 +137,7 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): ApiResponse<T> 
             val msg = response.errorBody()?.string()
             val errorMsg = if(msg.isNullOrEmpty())
                 response.message() else msg
+            Log.d("AR", "ApiErrorResponse;;errorMsg: $errorMsg")
             ApiErrorResponse(errorMsg)
         }
     } catch(e: Exception) {

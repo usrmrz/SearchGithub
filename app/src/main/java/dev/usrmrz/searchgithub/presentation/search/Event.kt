@@ -1,8 +1,13 @@
 package dev.usrmrz.searchgithub.presentation.search
 
-sealed class Event {
-    data class Search(val query: String) : Event()
-}
+//sealed class Event {
+//    data class Search(val query: String) : Event()
+//}
+
+
+
+
+
 
 
 
