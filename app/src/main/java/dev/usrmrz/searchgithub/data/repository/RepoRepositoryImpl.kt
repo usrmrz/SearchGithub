@@ -36,7 +36,6 @@ import javax.inject.Singleton
 
 //@Suppress("unused")
 @Singleton
-@OpenForTesting
 class RepoRepositoryImpl(
     private val api: GithubService,
     private val dao: RepoDao,
@@ -176,19 +175,6 @@ class RepoRepositoryImpl(
         emit(newValue)
     }.flowOn(Dispatchers.IO)
 
-
-//    override fun searchNextPage(query: String): Flow<Resource<Boolean>>? {
-//        Log.d("RRI", "searchNextPage;;query: $query")
-//        val fetchNextSearchPageTask = FetchNextSearchPageTask(
-//            query = query,
-//            api = api,
-//            db = db,
-//        )
-//        Log.d("RRI", "fetchNextSearchPageTask;;fetchNextSearchPageTask.flowNext: ${fetchNextSearchPageTask.flowNext}")
-//        fetchNextSearchPageTask.fetchNextPage()
-//        return null
-//    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun search(query: String): Flow<Resource<List<Repo>>> {
         return object : NetworkBoundResource<List<Repo>, RepoSearchResponse>() {
@@ -231,4 +217,3 @@ class RepoRepositoryImpl(
         }.asFlow()
     }
 }
-
