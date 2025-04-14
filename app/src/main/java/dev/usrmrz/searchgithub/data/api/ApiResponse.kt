@@ -8,7 +8,7 @@ import java.util.regex.Pattern
 // T is used in extending classes
 sealed class ApiResponse<out T> {
     companion object {
-        fun <T> create(error: Throwable): ApiResponse<T> {
+        fun <T> create(error: Throwable): ApiErrorResponse<T> {
             return ApiErrorResponse(error.message ?: "unknown error")
         }
 
@@ -30,7 +30,6 @@ sealed class ApiResponse<out T> {
                 } else {
                     ApiSuccessResponse(
                         body = body,
-//                        linkHeader = response.headers()["link"],
                         linkHeader = linkHeader,
                     )
 
@@ -70,8 +69,7 @@ data class ApiSuccessResponse<T>(
         body = body,
         links = linkHeader?.extractLinks() ?: emptyMap()
     ) {
-        Log.d("ApiR", "links: $links")
-        Log.d("ApiR", "linkHeader: $linkHeader")
+        Log.d("ApiR", "links: $links; linkHeader: $linkHeader")
     }
 
     companion object {

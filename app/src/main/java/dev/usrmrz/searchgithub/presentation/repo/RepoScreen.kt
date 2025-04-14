@@ -12,6 +12,6 @@ fun RepoScreen(
     name: String,
     owner: String
 ) {
-    Log.d("RepoScreen", "Name: $name Owner: $owner, viewModel: $viewModel, onUserClick: $onUserClick")
+    Log.d("RScr", "Name: $name Owner: $owner, viewModel: $viewModel, onUserClick: $onUserClick")
     println("$name and $owner")
 }

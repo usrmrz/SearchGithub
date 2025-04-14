@@ -11,9 +11,4 @@ data class Contributor(
     val repoName: String,
     @field:SerializedName("repo_owner")
     val repoOwner: String,
-//    var repoName: String,
-//    var repoOwner: String
-) //{
-//    lateinit var repoName: String
-//    lateinit var repoOwner: String
-//}
+)

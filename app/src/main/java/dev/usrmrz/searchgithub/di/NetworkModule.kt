@@ -25,7 +25,6 @@ object NetworkModule {
 //        .setDateFormat("dd-MM-yyyy")
 //        .setPrettyPrinting()
 //        .serializeNulls()
-//        .registerTypeAdapter(ApiResponse::class.java, ApiResponseAdapter<String>(Any::class.java))
         .create()
 
     @Provides

@@ -1,7 +1,6 @@
 package dev.usrmrz.searchgithub.data.repository
 
 import android.util.Log
-import androidx.annotation.OpenForTesting
 import androidx.room.withTransaction
 import dev.usrmrz.searchgithub.data.api.ApiEmptyResponse
 import dev.usrmrz.searchgithub.data.api.ApiErrorResponse
@@ -50,10 +49,10 @@ class RepoRepositoryImpl(
             override fun shouldFetch(data: List<Repo>?) =
                 data.isNullOrEmpty() || repoListRateLimit.shouldFetch(owner)
 
-            override suspend fun createCall() = api.getRepos(owner)
             override fun loadFromDb(): Flow<List<Repo>> = dao.loadRepositories(owner)
                 .map { entities -> entities.map { it.toDomain() } }
 
+            override suspend fun createCall() = api.getRepos(owner)
             override fun onFetchFailed() = repoListRateLimit.reset(owner)
         }.asFlow()
     }
@@ -65,8 +64,8 @@ class RepoRepositoryImpl(
             }
 
             override fun shouldFetch(data: Repo?) = data == null
-            override suspend fun createCall() = api.getRepo(owner, name)
             override fun loadFromDb() = dao.load(owner, name).map { it.toDomain() }
+            override suspend fun createCall() = api.getRepo(owner, name)
         }.asFlow()
     }
 
@@ -209,9 +208,8 @@ class RepoRepositoryImpl(
             override suspend fun createCall() = api.searchRepos(query)
             override fun processResponse(response: ApiSuccessResponse<RepoSearchResponse>): RepoSearchResponse {
                 val body = response.body
-                val links = response.links
                 body.nextPage = response.nextPage
-                Log.d("RRI", "body.nextPage;;body.nextPage: ${body.nextPage};links: $links")
+                Log.d("RRI", "body.nextPage;;body.nextPage: ${body.nextPage}")
                 return body
             }
         }.asFlow()

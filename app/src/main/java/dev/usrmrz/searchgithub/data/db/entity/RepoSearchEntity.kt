@@ -1,7 +1,6 @@
 package dev.usrmrz.searchgithub.data.db.entity
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import dev.usrmrz.searchgithub.data.db.GithubTypeConverters
 

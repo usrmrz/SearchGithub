@@ -75,21 +75,7 @@ fun SearchScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val listState = rememberLazyListState()
 
-    Log.d(
-        "SScr",
-        "1_isEqual query&results: query: $query; results: $results loadMoreStatus: $loadMoreStatus"
-    )
-    Log.d(
-        "SScr",
-        "2_searchText: $searchText keyboardController: $keyboardController listState: $listState"
-    )
-
     LaunchedEffect(listState) {
-//        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
-//            .map { visibleItems -> visibleItems.lastOrNull()?.index }
-//            .collectLatest { lastVisibleItem ->
-//                if(lastVisibleItem != null && lastVisibleItem >= results.data!!.size - 1) {
-
         Log.d("SScr", "LaunchedEffect(key1: listState);;listState: $listState")
         snapshotFlow { listState.firstVisibleItemIndex to listState.layoutInfo.totalItemsCount }
             .distinctUntilChanged()
@@ -97,7 +83,7 @@ fun SearchScreen(
                 if(totalItems > 0 && firstIndex + listState.layoutInfo.visibleItemsInfo.size >= totalItems - 1) {
                     Log.d(
                         "SScr",
-                        "if(totalItems > 0 && firstIndex + listState.layoutInfo.visibleItemsInfo.size >= totalItems - 1);;listState: $listState; firstIndex: $firstIndex; totalItems: $totalItems;  size: ${listState.layoutInfo.visibleItemsInfo.size}; results: $results results.data: ${results.data?.size?.minus(1)}"
+                        "if(totalItems > 0;;listState: $listState; firstIndex: $firstIndex; totalItems: $totalItems;  size: ${listState.layoutInfo.visibleItemsInfo.size}; results: $results results.data: ${results.data?.size?.minus(1)}"
                     )
                     viewModel.loadNextPage()
                 }

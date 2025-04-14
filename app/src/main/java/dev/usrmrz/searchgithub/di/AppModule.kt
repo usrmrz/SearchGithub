@@ -9,8 +9,11 @@ import dagger.hilt.components.SingletonComponent
 import dev.usrmrz.searchgithub.data.api.GithubService
 import dev.usrmrz.searchgithub.data.db.GithubDb
 import dev.usrmrz.searchgithub.data.db.RepoDao
+import dev.usrmrz.searchgithub.data.db.UserDao
 import dev.usrmrz.searchgithub.data.repository.RepoRepositoryImpl
+import dev.usrmrz.searchgithub.data.repository.UserRepositoryImpl
 import dev.usrmrz.searchgithub.domain.repository.RepoRepository
+import dev.usrmrz.searchgithub.domain.repository.UserRepository
 import javax.inject.Singleton
 
 @Module
@@ -39,5 +42,17 @@ object AppModule {
     @Provides
     fun provideRepoDao(db: GithubDb): RepoDao {
         return db.repoDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserRepository(api: GithubService, dao: UserDao, db: GithubDb): UserRepository {
+        return UserRepositoryImpl(api, dao, db)
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserDao(db: GithubDb): UserDao {
+        return db.userDao()
     }
 }
