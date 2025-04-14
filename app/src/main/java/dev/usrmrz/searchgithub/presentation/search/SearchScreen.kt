@@ -57,6 +57,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dev.usrmrz.searchgithub.R
 import dev.usrmrz.searchgithub.domain.model.Repo
 import dev.usrmrz.searchgithub.domain.model.Status
+import dev.usrmrz.searchgithub.presentation.ui.component.scrollbar
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -160,7 +161,9 @@ fun SearchScreen(
 
         LazyColumn(
             state = listState,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .scrollbar(state = listState)
         ) {
             items(results.data.orEmpty()) { repo ->
                 RepoItem(repo = repo, onClick = { onRepoClick(repo.owner.login, repo.name) })

@@ -13,35 +13,32 @@ import kotlinx.coroutines.flow.map
 import retrofit2.Response
 
 abstract class NetworkBoundResource<ResultType, RequestType> {
-    fun asFlow(): Flow<Resource<ResultType>> = flow<Resource<ResultType>> {
+        fun asFlow(): Flow<Resource<ResultType>> = flow {
         emit(Resource.Loading())
         val dbValue = loadFromDb().first()
         if(shouldFetch(dbValue)) {
             emit(Resource.Loading(dbValue))
             val apiResponse = safeApiCall { createCall() }
-//            val apiResponse = createCall()
             when(apiResponse) {
                 is ApiSuccessResponse -> {
-//                    saveCallResult(apiResponse.body)
                     saveCallResult(processResponse(apiResponse))
-                    val emitted = loadFromDb().map { Resource.Success(it) }
-                    emitAll(emitted)
+                    emitAll(loadFromDb().map { Resource.Success(it) })
                 }
+
                 is ApiEmptyResponse -> {
-                    val emitted = loadFromDb().map { Resource.Success(it) }
-                    emitAll(emitted)
+                    emitAll(loadFromDb().map { Resource.Success(it) })
                 }
+
                 is ApiErrorResponse -> {
                     onFetchFailed()
-                    val emitted = loadFromDb().map { Resource.Error(apiResponse.errorMessage, it) }
-                    emitAll(emitted)
+                    emitAll(loadFromDb().map { Resource.Error(apiResponse.errorMessage, it) })
                 }
             }
         } else {
-            val emitted = loadFromDb().map { Resource.Success(it) }
-            emitAll(emitted)
+            emitAll(loadFromDb().map { Resource.Success(it) })
         }
     }
+
     protected open fun onFetchFailed() {}
     protected open fun processResponse(response: ApiSuccessResponse<RequestType>) = response.body
     protected abstract suspend fun saveCallResult(item: RequestType)

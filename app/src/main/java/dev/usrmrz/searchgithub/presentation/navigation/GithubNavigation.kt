@@ -17,6 +17,7 @@ fun NavigationGraph(navController: NavHostController) {
         composable("search") {
             SearchScreen(
                 onRepoClick = { owner, name ->
+
                     navController.navigate("repo/$owner/$name")
                 }
             )

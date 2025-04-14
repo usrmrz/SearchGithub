@@ -1,6 +1,5 @@
 package dev.usrmrz.searchgithub.util
 
-
 import android.os.SystemClock
 import android.util.Log
 import androidx.collection.ArrayMap
@@ -14,8 +13,6 @@ class RateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
     private val timestamps = ArrayMap<KEY, Long>()
     private val timeout = timeUnit.toMillis(timeout.toLong())
 
-
-
     @Synchronized
     fun shouldFetch(key: KEY): Boolean {
 
@@ -23,14 +20,16 @@ class RateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
         val now = now()
         if (lastFetched == null) {
             timestamps[key] = now
+            Log.d("RtLm", "lastFetched == null;;lastFetched: $lastFetched, now: $now, timestamps[key]: ${timestamps[key]}")
             return true
         }
         if (now - lastFetched > timeout) {
             timestamps[key] = now
+            Log.d("RtLm", "now - lastFetched > timeout;;lastFetched: $lastFetched, now: $now, timeout: $timeout")
             return true
         }
 
-        Log.d("RtLmtr", "lastFetched: $lastFetched, now: $now, timestamps: $timestamps")
+        Log.d("RtLm", "fun shouldFetch return false;;lastFetched: $lastFetched, now: $now, timestamps: $timestamps")
 
         return false
     }
@@ -39,6 +38,7 @@ class RateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
 
     @Synchronized
     fun reset(key: KEY) {
+        Log.d("RtLm", "fun reset timestamps.remove(key);;key: $key, timestamps: $timestamps")
         timestamps.remove(key)
     }
 }

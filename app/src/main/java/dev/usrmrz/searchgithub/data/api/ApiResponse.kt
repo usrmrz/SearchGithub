@@ -12,7 +12,6 @@ sealed class ApiResponse<out T> {
             return ApiErrorResponse(error.message ?: "unknown error")
         }
 
-
         fun <T> create(response: Response<T>): ApiResponse<T> {
             return if(response.isSuccessful) {
                 val body = response.body()

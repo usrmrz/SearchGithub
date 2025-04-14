@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 @Dao
-//@Suppress("unused")
 interface RepoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -33,7 +32,7 @@ interface RepoDao {
 
     @Query(
         """
-       SELECT login, avatarUrl, repoName, repoOwner, contributions FROM contributor
+       SELECT * FROM contributor
        WHERE repoName = :name AND repoOwner = :owner
        ORDER BY contributions DESC
     """

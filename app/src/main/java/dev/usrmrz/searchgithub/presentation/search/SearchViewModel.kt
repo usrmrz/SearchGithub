@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 
-
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val repoRepository: RepoRepository,
@@ -103,25 +102,17 @@ class SearchViewModel @Inject constructor(
 
         private var query: String? = null
         private var _hasMore: Boolean = true
-//    val hasMore: Boolean get() = _hasMore
-
 
         fun queryNextPage(query: String) {
 
             reset()
             if(this.query == query) {
-                Log.d(
-                    "SVM",
-                    "if(this.query == query);;query: $query;"
-                )
+                Log.d("SVM", "if(this.query == query);;query: $query")
                 return
             }
             unregister()
             this.query = query
-            Log.d(
-                "SVM",
-                "this.query = query;;query: $query;"
-            )
+            Log.d("SVM", "this.query = query;;query: $query")
             nextPageFlow = repository.searchNextPage(query)
 
             scope.launch {
@@ -148,14 +139,13 @@ class SearchViewModel @Inject constructor(
         private fun unregister() {
             nextPageFlow = null
             if(_hasMore) {
-            query = null
+                query = null
             }
         }
 
         fun reset() {
             unregister()
             _hasMore = true
-//            query = null
             _loadMoreState.value = LoadMoreState(false, null)
         }
     }

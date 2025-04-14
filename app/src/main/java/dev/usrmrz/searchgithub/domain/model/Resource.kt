@@ -1,11 +1,9 @@
 package dev.usrmrz.searchgithub.domain.model
 
-//@Suppress("unused")
 /**
  * A generic class that holds a value with its loading status.
  * @param <T>
 </T> */
-//version with sealed class
 sealed class Resource<T>(
     val status: Status,
     val data: T?,
