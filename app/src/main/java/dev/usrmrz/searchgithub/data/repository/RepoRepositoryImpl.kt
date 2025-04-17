@@ -105,74 +105,13 @@ class RepoRepositoryImpl(
         }.asFlow()
     }
 
-    override fun searchNextPage(query: String): Flow<Resource<Boolean>> = flow {
-        emit(Resource.Loading())
-        val current = db.repoDao().findSearchResult(query)
-        Log.d(
-            "RRI",
-            "val current = db.repoDao().findSearchResult(query);;query: $query; next: ${current?.next};"
-        )
-        if(current == null) {
-            emit(Resource.Success(false))
-            return@flow
-        }
-
-        val nextPage = current.next
-        Log.d(
-            "RRI",
-            "val nextPage = current.next;;nextPage: $nextPage;"
-        )
-        if(nextPage == null) {
-            emit(Resource.Success(false))
-            return@flow
-        }
-
-        val newValue = try {
-            val response = withContext(Dispatchers.IO) {
-                api.searchRepos(query, nextPage)
-            }
-            Log.d(
-                "RRI",
-                "val response = withContext;;response: $response;"
-            )
-
-            when(val apiResponse = ApiResponse.create(response)) {
-
-                is ApiSuccessResponse<RepoSearchResponse> -> {
-                    Log.d(
-                        "RRI",
-                        "is ApiSuccessResponse<RepoSearchResponse>;;apiResponse: $apiResponse;"
-                    )
-                    val ids = arrayListOf<Int>().apply {
-                        addAll(current.repoIds)
-                        addAll(apiResponse.body.items.map { it.id })
-                    }
-
-                    val merged = RepoSearchResult(
-                        query, ids,
-                        apiResponse.body.total, apiResponse.nextPage
-                    )
-                    val repoEntities = apiResponse.body.items.map { it.toEntity() }
-
-                    db.withTransaction {
-                        dao.insert(merged.toEntity())
-                        dao.insertRepos(repoEntities)
-                    }
-
-                    Resource.Success(apiResponse.nextPage != null)
-                }
-
-                is ApiEmptyResponse<RepoSearchResponse> -> Resource.Success(false)
-                is ApiErrorResponse<RepoSearchResponse> -> Resource.Error(
-                    apiResponse.errorMessage,
-                    true
-                )
-            }
-        } catch(e: IOException) {
-            Resource.Error(e.message ?: "Unknown error", true)
-        }
-        emit(newValue)
-    }.flowOn(Dispatchers.IO)
+    override fun searchNextPage(query: String): Flow<Resource<Boolean>> {
+        return FetchNextSearchPageTask(
+            query = query,
+            api = api,
+            db = db,
+        ).asFlow()
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun search(query: String): Flow<Resource<List<Repo>>> {
